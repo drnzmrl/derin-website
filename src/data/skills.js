@@ -1,0 +1,65 @@
+export const skillGroups = [
+  {
+    category: "Aerospace & Engineering",
+    icon: "Rocket",
+    skills: [
+      "Aerodynamics & CFD",
+      "Structural Analysis (FEA)",
+      "Flight Mechanics",
+      "Orbital Mechanics",
+      "Propulsion Systems",
+      "Thermal Analysis",
+      "Aircraft Design",
+      "Wind Tunnel Testing",
+    ],
+  },
+  {
+    category: "Software & Simulation",
+    icon: "Monitor",
+    skills: [
+      "ANSYS Fluent",
+      "ANSYS Mechanical",
+      "SolidWorks",
+      "CATIA V5",
+      "AutoCAD",
+      "MATLAB / Simulink",
+      "NASA CEA",
+      "XFoil",
+    ],
+  },
+  {
+    category: "Programming",
+    icon: "Code2",
+    skills: [
+      "Python",
+      "MATLAB",
+      "NumPy / SciPy",
+      "Pandas",
+      "Matplotlib",
+      "LaTeX",
+      "Git",
+      "Linux",
+    ],
+  },
+  {
+    category: "Research & Academic",
+    icon: "BookOpen",
+    skills: [
+      "Technical Report Writing",
+      "Literature Review",
+      "Data Acquisition (DAQ)",
+      "Scientific Visualization",
+      "Experimental Design",
+      "Peer Review",
+    ],
+  },
+  {
+    category: "Languages",
+    icon: "Globe",
+    skills: [
+      "Turkish — Native",
+      "English — Fluent (C1)",
+      "German — Intermediate (B1)",
+    ],
+  },
+]
