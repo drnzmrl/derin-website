@@ -160,15 +160,42 @@ space: {
 
   craft: {
     rocket: true,     // hero'da ismin yanından başlayıp yıldızlara iner
-    plane: true,      // hero'nun tepesinden geçen uçak
     satellite: true,  // sağ kenarda duran minik uydu
-    astronaut: true,  // sayfanın ortasında süzülen astronot
-    probe: true,      // aşağılarda, uzakta derin uzay sondası
+    probe: false,     // aşağılarda, uzakta derin uzay sondası
   },
   rocketSide: 'left', // 'left' | 'right'
   rocketFlame: true,
 }
 ```
+
+### Gezegenler
+
+`theme.config.js` → `space.planets.list`. Sayfa boyunca sırayla
+devreye giriyorlar: Dünya + Ay (hero) → Mars → Jüpiter → halkalı Satürn.
+
+```js
+{
+  key: 'saturn',
+  texture: '/textures/saturn.jpg',
+  ring: true,
+  ringTexture: '/textures/saturn_ring.png',
+  radius: 6,
+  pos: [-10, -1, -32],   // [x, y, z] — z küçüldükçe uzaklaşır
+  tilt: 0.47,            // eksen eğikliği
+  spin: 0.018,           // dönüş hızı
+  from: 0.74, to: 1,     // kaydırmanın hangi aralığında görünsün
+}
+```
+
+Satırı silersen gezegen kaybolur, eklersen görünür. `from`/`to`
+değerleriyle hangi bölümlerin arkasında duracağını ayarlarsın.
+
+**Yeni gezegen eklemek:** dokusunu
+[solarsystemscope.com/textures](https://www.solarsystemscope.com/textures/)
+adresinden indir, `public/textures/` içine koy, listeye bir satır ekle.
+Doku yüklenmezse gezegen düz renkli küre olarak çizilir, sayfa bozulmaz.
+
+Dokular CC BY 4.0 (NASA verisine dayalı); atıf altbilgide.
 
 ### Kasıyorsa ne yapmalı
 

@@ -69,16 +69,81 @@ export const theme = {
     /* Zayıf cihazda kendini otomatik kıssın (ilk 3 saniyeyi ölçer) */
     autoQuality: true,
 
-    /* ---- Sahnedeki kadro ---- Her biri tek tek kapatılabilir. */
+    /* ---- Sahnedeki araçlar ---- Her biri tek tek kapatılabilir. */
     craft: {
       rocket: true,     // hero'da ismin yanından başlayıp yıldızlara iner
-      plane: true,      // hero'nun tepesinden geçen uçak
       satellite: true,  // sağ kenarda duran minik uydu
-      astronaut: true,  // sayfanın ortasında süzülen astronot
-      probe: true,      // aşağılarda, uzakta derin uzay sondası
+      probe: false,     // aşağılarda, uzakta derin uzay sondası
     },
     rocketSide: 'left',  // 'left' | 'right'
     rocketFlame: true,
+
+    /* ---- GEZEGENLER ----
+       Dokular: Solar System Scope (CC BY 4.0, NASA verisi)
+       public/textures/ — yenisini eklemek için oradaki README'ye bak.
+
+       from / to : kaydırmanın hangi aralığında görünsün (0 = tepe, 1 = dip)
+       pos       : [x, y, z] — z ne kadar küçükse o kadar uzakta
+       radius    : büyüklük    tilt: eksen eğikliği    spin: dönüş hızı
+
+       Satır silersen gezegen kaybolur, ekleyince görünür.        */
+    planets: {
+      enabled: true,
+      list: [
+        {
+          key: 'earth',
+          texture: '/textures/earth_daymap.jpg',
+          radius: 9,
+          pos: [-13, -11, -30],
+          tilt: 0.41,
+          spin: 0.012,
+          from: 0,
+          to: 0.3,          // hero: roketin ayrıldığı gezegen
+        },
+        {
+          key: 'moon',
+          texture: '/textures/moon.jpg',
+          radius: 2.2,
+          pos: [9, 5.5, -34],
+          tilt: 0.12,
+          spin: 0.008,
+          from: 0,
+          to: 0.34,
+        },
+        {
+          key: 'mars',
+          texture: '/textures/mars.jpg',
+          radius: 4,
+          pos: [-9, 3, -30],
+          tilt: 0.44,
+          spin: 0.016,
+          from: 0.26,
+          to: 0.62,
+        },
+        {
+          key: 'jupiter',
+          texture: '/textures/jupiter.jpg',
+          radius: 8,
+          pos: [11, -3, -34],
+          tilt: 0.05,
+          spin: 0.022,
+          from: 0.52,
+          to: 0.84,
+        },
+        {
+          key: 'saturn',
+          texture: '/textures/saturn.jpg',
+          ring: true,
+          ringTexture: '/textures/saturn_ring.png',
+          radius: 6,
+          pos: [-10, -1, -32],
+          tilt: 0.47,
+          spin: 0.018,
+          from: 0.74,
+          to: 1,            // finalde halkalı Satürn
+        },
+      ],
+    },
   },
 
   /* ---- 2B yıldız alanı (3B kapalıyken yedek) ----

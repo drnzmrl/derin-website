@@ -52,7 +52,16 @@ export default function Footer() {
             >
               OpenNGC
             </a>{' '}
-            (CC BY-SA 4.0)
+            (CC BY-SA 4.0) · Planet textures:{' '}
+            <a
+              href="https://www.solarsystemscope.com/textures/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-text-dim underline underline-offset-2"
+            >
+              Solar System Scope
+            </a>{' '}
+            (CC BY 4.0)
           </p>
         </div>
       </div>

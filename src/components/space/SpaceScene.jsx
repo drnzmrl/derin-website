@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { buildStars, buildDeepSky, buildDust } from './buildSky'
 import { CRAFT_BUILDERS } from './buildSpacecraft'
+import { buildPlanets, setPlanetOpacity } from './buildPlanets'
 import { theme } from '../../config/theme.config'
 import { motionOff } from '../../config/applyTheme'
 
@@ -84,10 +85,7 @@ export default function SpaceScene() {
     let stars = null
     let deepSky = null
 
-    // ---- Kadro ----
-    const make = (name, on) =>
-      on && !still ? CRAFT_BUILDERS[name]() : null
-
+    // ---- Araçlar ----
     const rocket = craftCfg.rocket ? CRAFT_BUILDERS.rocket() : null
     if (rocket) {
       if (cfg.rocketFlame === false && rocket.userData.flame) {
@@ -96,9 +94,6 @@ export default function SpaceScene() {
       scene.add(rocket)
     }
 
-    const plane = make('plane', craftCfg.plane && !mobile)
-    if (plane) scene.add(plane)
-
     const minisat = craftCfg.satellite ? CRAFT_BUILDERS.minisat() : null
     if (minisat) {
       // Sağ kenarda, tamamen kadraja girecek kadar içeride ve küçük
@@ -106,17 +101,25 @@ export default function SpaceScene() {
       scene.add(minisat)
     }
 
-    const astronaut = make('astronaut', craftCfg.astronaut && !mobile)
-    if (astronaut) {
-      astronaut.visible = false
-      scene.add(astronaut)
-    }
-
-    const probe = make('probe', craftCfg.probe && !mobile)
+    const probe = craftCfg.probe && !mobile ? CRAFT_BUILDERS.probe() : null
     if (probe) {
       probe.visible = false
       scene.add(probe)
     }
+
+    // ---- Gezegenler ----
+    // Sayfa boyunca sırayla devreye girip çıkıyorlar:
+    // Dünya/Ay (hero) → Mars → Jüpiter → halkalı Satürn (final)
+    const planetCfg = cfg.planets || {}
+    const planets =
+      planetCfg.enabled === false
+        ? []
+        : buildPlanets(planetCfg.list || []).map((p) => {
+            // Mobilde küre çözünürlüğü ve boyut biraz küçülsün
+            if (mobile) p.scale.setScalar(0.7)
+            scene.add(p)
+            return p
+          })
 
     // ---- Kataloglar ----
     let disposed = false
@@ -242,20 +245,22 @@ export default function SpaceScene() {
         if (!still) rocket.userData.spin?.(dt, t)
       }
 
-      if (plane) {
-        // Yalnızca hero'da: tepeden soldan sağa geçer, sonra başa döner
-        const show = k < 0.22
-        plane.visible = show
-        if (show) {
-          const cross = (t * 0.055) % 1
-          plane.position.set(-22 + cross * 44, 5.6 - k * 4, -20)
-          plane.scale.setScalar(1.25)
-          // Kadrajın kenarlarında görünmesin
-          const edge = Math.min(1, Math.min(cross, 1 - cross) * 6)
-          const fade = edge * (1 - ramp(k, 0.1, 0.22))
-          if (plane.userData.trail) plane.userData.trail.material.opacity = 0.16 * fade
-          plane.visible = fade > 0.02
-          if (!still) plane.userData.spin?.(dt, t)
+      // Gezegenler: kendi kaydırma pencerelerinde belirip kayboluyor,
+      // görünürken de hafifçe sürükleniyorlar.
+      for (const planet of planets) {
+        const c = planet.userData.config
+        const vis = window01(k, c.from ?? 0, c.to ?? 1)
+        planet.visible = vis > 0.015
+        if (!planet.visible) continue
+
+        setPlanetOpacity(planet, Math.min(1, vis * 1.5))
+
+        const [x, y, z] = c.pos || [0, 0, -30]
+        const local = ramp(k, c.from ?? 0, c.to ?? 1)
+        planet.position.set(x, y + (0.5 - local) * 5, z)
+
+        if (!still) {
+          planet.userData.body.rotation.y += dt * (planet.userData.spinSpeed || 0.02)
         }
       }
 
@@ -264,20 +269,6 @@ export default function SpaceScene() {
         // kadrajdan çıkmıyor, her ekranda görünür.
         minisat.position.set(7.4, 2.6 - k * 1.2, -15)
         if (!still) minisat.userData.spin?.(dt, t)
-      }
-
-      if (astronaut) {
-        const vis = window01(k, 0.28, 0.72)
-        astronaut.visible = vis > 0.03
-        if (astronaut.visible) {
-          astronaut.position.set(
-            -6.2 + Math.sin(t * 0.12) * 0.5,
-            lerp(3.5, -3.5, ramp(k, 0.28, 0.72)),
-            -13
-          )
-          astronaut.scale.setScalar(0.85 + vis * 0.35)
-          astronaut.userData.spin?.(dt, t)
-        }
       }
 
       if (probe) {
@@ -302,10 +293,16 @@ export default function SpaceScene() {
       window.removeEventListener('resize', onResize)
       document.removeEventListener('visibilitychange', onVisibility)
 
+      const disposeMaterial = (m) => {
+        // Gezegen dokularını da bırak, yoksa GPU belleğinde kalıyor
+        m.map?.dispose?.()
+        m.alphaMap?.dispose?.()
+        m.dispose()
+      }
       scene.traverse((o) => {
         o.geometry?.dispose?.()
-        if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose())
-        else o.material?.dispose?.()
+        if (Array.isArray(o.material)) o.material.forEach(disposeMaterial)
+        else if (o.material) disposeMaterial(o.material)
       })
       renderer.dispose()
       renderer.domElement.remove()
