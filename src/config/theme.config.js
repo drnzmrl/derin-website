@@ -52,7 +52,7 @@ export const theme = {
     /* Sol tarafta kaydırdıkça tırmanan araç.
        'rocket' | 'probe' | 'satellite' | false (kapalı) */
     craft: 'rocket',
-    craftSide: 'right',  // 'left' | 'right' — hero'da ismin hangi yanında
+    craftSide: 'left',   // 'left' | 'right' — hero'da ismin hangi yanında
     craftFlame: true,    // roketin egzoz alevi
     orbiter: true,       // arkada yerinde yavaşça dönen uydu
   },
