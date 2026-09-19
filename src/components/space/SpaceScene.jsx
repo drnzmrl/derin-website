@@ -156,9 +156,13 @@ export default function SpaceScene() {
 
     // ---- Kaydırma ----
     let progress = 0
+    // Sayfa toplam kaç ekran boyu kaydırılabiliyor — "ilk iki ekran"
+    // gibi ölçüleri sayfa uzunluğundan bağımsız hesaplamak için.
+    let scrollableScreens = 1
     const readScroll = () => {
       const max = document.body.scrollHeight - window.innerHeight
       progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+      scrollableScreens = Math.max(0.001, max / window.innerHeight)
     }
     readScroll()
 
@@ -266,16 +270,25 @@ export default function SpaceScene() {
       }
 
       if (minisat) {
-        // Sağ tarafta küçük bir yörüngede dolanıyor ama kadrajı
-        // hiç terk etmiyor: elipsin tamamı ekranın sağ yarısında.
-        // Ayrıca kaydırdıkça aşağı doğru süzülüyor.
-        const a = t * 0.13
-        minisat.position.set(
-          6.8 + Math.cos(a) * 1.7,
-          3.4 - k * 5 + Math.sin(a) * 1.2,
-          -15 + Math.sin(a * 0.7) * 3
-        )
-        if (!still) minisat.userData.spin?.(dt, t)
+        // Uydu yalnızca ilk iki ekranda. Sonrasında bir ekran boyunca
+        // hem uzaklaşıp küçülüyor hem soluklaşıyor, sonra tamamen gidiyor.
+        const screens = k * scrollableScreens
+        const stay = cfg.satelliteScreens ?? 2
+        const leave = ramp(screens, stay, stay + 1) // 0 → 1 arası çıkış
+
+        minisat.visible = leave < 0.995
+        if (minisat.visible) {
+          // Sağ tarafta küçük bir yörüngede dolanıyor; elipsin tamamı
+          // ekranın sağ yarısında kaldığı için kadrajdan çıkmıyor.
+          const a = t * 0.13
+          minisat.position.set(
+            6.8 + Math.cos(a) * 1.7,
+            3.4 - Math.min(screens, stay) * 1.1 + Math.sin(a) * 1.2,
+            -15 + Math.sin(a * 0.7) * 3 - leave * 55 // derinlere çekiliyor
+          )
+          minisat.userData.setFade?.(1 - leave)
+          if (!still) minisat.userData.spin?.(dt, t)
+        }
       }
 
       if (probe) {

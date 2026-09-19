@@ -217,8 +217,18 @@ export function buildProbe() {
  */
 export function buildMiniSat() {
   const g = new THREE.Group()
-  const flat = (color, opacity = 1) =>
-    new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity })
+  const materials = []
+  // Hepsi transparent: uydu sahneden çıkarken soluklaşabilsin
+  const flat = (color, baseOpacity = 1) => {
+    const m = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: baseOpacity,
+    })
+    m.userData.baseOpacity = baseOpacity
+    materials.push(m)
+    return m
+  }
 
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.4, 0.34), flat('#B9C4DD'))
   g.add(body)
@@ -230,6 +240,12 @@ export function buildMiniSat() {
     )
     panel.position.x = s * 0.5
     g.add(panel)
+  }
+
+  g.userData.materials = materials
+  /** 0 = tamamen kaybolmuş, 1 = tam görünür */
+  g.userData.setFade = (v) => {
+    for (const m of materials) m.opacity = m.userData.baseOpacity * v
   }
 
   g.userData.spin = (dt) => {

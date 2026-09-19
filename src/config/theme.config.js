@@ -38,8 +38,10 @@ export const theme = {
 
   /* ---- GERÇEK GÖKYÜZÜ (3B) ----
      Gerçek astronomik kataloglardan çizilir:
-       • 8.920 yıldız  — HYG v4.4 (Hipparcos + Yale BSC + Gliese)
-       • 6.442 derin gök cismi — OpenNGC (5.500'ü gerçek galaksi)
+       • HYG v4.4     — 8.920 yıldız (Hipparcos + Yale BSC + Gliese)
+       • OpenNGC      — 6.442 derin gök cismi (5.500'ü galaksi)
+     Bunlar kataloğun tamamı; sahneye kaçının gireceğini aşağıdaki
+     starMag / deepSkyMag sınırları belirler.
      Konumlar, renkler ve parlaklıklar gerçek — takımyıldızlar
      olması gereken yerde çıkar.
 
@@ -72,11 +74,16 @@ export const theme = {
     /* ---- Sahnedeki araçlar ---- Her biri tek tek kapatılabilir. */
     craft: {
       rocket: true,     // hero'da ismin yanından başlayıp yıldızlara iner
-      satellite: true,  // sağ kenarda duran minik uydu
+      satellite: true,  // sağda dolanan minik uydu (ilk iki ekran)
       probe: false,     // aşağılarda, uzakta derin uzay sondası
     },
     rocketSide: 'left',  // 'left' | 'right'
     rocketFlame: true,
+
+    /* Uydu kaç ekran boyunca kalsın. Sonrasında bir ekran boyunca
+       uzaklaşıp soluklaşarak kayboluyor. Sayfa uzunluğundan değil,
+       gerçek ekran yüksekliğinden hesaplanır.                    */
+    satelliteScreens: 2,
 
     /* ---- GEZEGENLER ----
        Dokular: Solar System Scope (CC BY 4.0, NASA verisi)

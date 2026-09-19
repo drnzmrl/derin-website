@@ -142,9 +142,11 @@ shape: {
 ## 3B gökyüzü sahnesi
 
 `theme.config.js` → `space`. Gerçek astronomik kataloglardan çiziliyor:
-**8.920 gerçek yıldız** (HYG v4.4) ve **6.442 gerçek gök cismi**
-(OpenNGC — 5.500'ü galaksi). Konumlar, renkler ve parlaklıklar gerçek,
-yani takımyıldızlar olması gereken yerde.
+**HYG v4.4** (8.920 yıldız) ve **OpenNGC** (6.442 gök cismi, 5.500'ü
+galaksi). Bunlar katalogların tamamı — sahneye kaçının gireceğini
+`starMag` / `deepSkyMag` sınırları belirler (şu an 2.072 yıldız +
+713 gök cismi). Konumlar, renkler ve parlaklıklar gerçek, yani
+takımyıldızlar olması gereken yerde.
 
 ```js
 space: {
@@ -160,11 +162,13 @@ space: {
 
   craft: {
     rocket: true,     // hero'da ismin yanından başlayıp yıldızlara iner
-    satellite: true,  // sağ kenarda duran minik uydu
+    satellite: true,  // sağda dolanan minik uydu
     probe: false,     // aşağılarda, uzakta derin uzay sondası
   },
   rocketSide: 'left', // 'left' | 'right'
   rocketFlame: true,
+
+  satelliteScreens: 2, // uydu kaç ekran kalsın, sonra uzaklaşıp kaybolsun
 }
 ```
 
@@ -217,8 +221,8 @@ sayıyı düşürmek yıldız sayısını hızla azaltır:
 Azaltırken `starBoost` / `deepSkyBoost` değerlerini artır — daha az ama
 daha parlak yıldız, genelde daha iyi de duruyor.
 
-Hâlâ ağırsa sırayla: `craft.astronaut` / `craft.probe` kapat →
-`deepSkyMag: 9` → `space.enabled: false` (2B yıldız alanına düşer).
+Hâlâ ağırsa sırayla: `planets.enabled: false` → `deepSkyMag: 9` →
+`starMag: 4.5` → `space.enabled: false` (hafif 2B yıldız alanına düşer).
 
 Sahne zaten mobilde kendiliğinden sadeleşiyor, sekme arkaya geçince
 çizmeyi durduruyor, sistem "hareketi azalt" diyorsa hiç açılmıyor ve
