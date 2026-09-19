@@ -60,3 +60,16 @@ export const projects = [
     year: "2023",
   },
 ]
+
+/* Kategori → ikon eşlemesi.
+   Yeni bir kategori kullanırsan buraya bir satır ekle.
+   İkon isimleri: https://lucide.dev/icons
+   Eşleşme bulunamazsa 'Wind' kullanılır.                */
+export const projectCategoryIcons = {
+  'CFD / Aerodynamics': 'Wind',
+  'Structural / FEA': 'Cpu',
+  Propulsion: 'Flame',
+  'Flight Mechanics': 'Navigation',
+  'Thermal / Re-entry': 'Thermometer',
+  'Experimental Aerodynamics': 'FlaskConical',
+}

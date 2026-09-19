@@ -1,117 +1,129 @@
 import { motion } from 'framer-motion'
-import { Rocket, BookOpen, FlaskConical, Globe, Zap, Code2 } from 'lucide-react'
-import SectionHeading from '../components/ui/SectionHeading'
+import Section from '../components/layout/Section'
+import Icon from '../components/ui/Icon'
+import { AnimatedNumber, BorderTrail } from '../components/motion'
+import { about } from '../data/about'
+import { site } from '../config/site.config'
+import { theme } from '../config/theme.config'
+import { dur } from '../config/applyTheme'
 
-const currentWork = [
-  {
-    icon: Zap,
-    title: 'High-Speed Aerodynamics',
-    items: ['3D wing & Ahmed body CFD (ANSYS Fluent — supersonic)', 'TEKNOFEST critical design report + CFD analysis'],
-  },
-  {
-    icon: Rocket,
-    title: 'Propulsion Studies',
-    items: ['Turbojet & turbofan cycle calculations', 'Propulsive efficiency, thrust specific fuel consumption'],
-  },
-  {
-    icon: Code2,
-    title: 'Software Projects',
-    items: ['Campus Collab — student collaboration platform', 'Mindmap — psychology-based mobile app (in dev)'],
-  },
-]
+const ease = theme.motion.ease
 
-const stats = [
-  { icon: Rocket, value: '3rd Year', label: 'B.Sc. Student' },
-  { icon: FlaskConical, value: '3+', label: 'CFD Projects' },
-  { icon: BookOpen, value: 'TEKNOFEST', label: 'Stage 1 Passed' },
-  { icon: Globe, value: '4', label: 'Languages' },
-]
+/** Paragrafı, highlight alanı vurgulanmış şekilde basar */
+function Paragraph({ tone, text, highlight }) {
+  const cls = {
+    strong: 'text-text leading-relaxed text-base md:text-lg',
+    soft: 'text-text-dim leading-relaxed',
+    accent: 'text-warm font-medium text-sm',
+  }[tone || 'soft']
 
-export default function About() {
+  if (!highlight || !text.includes(highlight)) {
+    return <p className={cls}>{text}</p>
+  }
+
+  const [before, after] = text.split(highlight)
   return (
-    <section id="about" className="py-28 px-6 section-grid">
-      <div className="max-w-6xl mx-auto">
-        <SectionHeading
-          label="About Me"
-          title="Who I Am"
-          subtitle="A brief introduction to my background, interests, and goals."
-        />
+    <p className={cls}>
+      {before}
+      <span className="text-accent font-medium">{highlight}</span>
+      {after}
+    </p>
+  )
+}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Photo column */}
-          <motion.div
-            className="flex justify-center lg:justify-start"
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="relative">
-              {/* Glow ring */}
-              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-accent/30 via-transparent to-accent/10 blur-sm" />
-              {/* Photo frame */}
-              <div className="relative w-72 h-80 md:w-80 md:h-96 rounded-2xl overflow-hidden border border-accent/20 bg-surface-2">
-                {/* Placeholder when no image */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 blueprint-grid">
-                  <div className="w-24 h-24 rounded-full bg-accent-dim border border-accent/30 flex items-center justify-center">
-                    <span className="font-display text-3xl font-semibold text-accent">D</span>
+export default function About({ config }) {
+  return (
+    <Section config={config}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        {/* Fotoğraf */}
+        <motion.div
+          className="flex justify-center lg:justify-start"
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: dur(0.8), ease }}
+        >
+          <div className="relative">
+            {/* Yumuşak şafak halesi */}
+            <div className="absolute -inset-3 rounded-[1.6rem] bg-gradient-to-br from-accent/20 via-transparent to-warm/20 blur-2xl" />
+
+            <div className="relative w-72 h-80 md:w-80 md:h-96 rounded-card overflow-hidden panel">
+              {about.photo ? (
+                <img
+                  src={about.photo}
+                  alt={about.photoAlt}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-4"
+                  style={{
+                    background:
+                      'radial-gradient(ellipse at 50% 30%, rgb(var(--c-accent) / 0.12), transparent 65%)',
+                  }}
+                >
+                  <div className="w-24 h-24 rounded-full border border-accent/25 bg-accent/10 flex items-center justify-center">
+                    <span className="font-display text-3xl font-semibold text-accent">
+                      {site.initial}
+                    </span>
                   </div>
-                  <p className="font-mono text-xs text-muted">profile photo</p>
+                  <p className="text-xs text-muted tracking-wide">
+                    src/data/about.js → photo
+                  </p>
                 </div>
-                {/* Real image — uncomment and set src when ready */}
-                {/* <img src="/images/profile/derin.jpg" alt="Derin" className="w-full h-full object-cover" /> */}
-              </div>
+              )}
+            </div>
 
-              {/* Floating badge */}
+            {about.badge && (
               <motion.div
-                className="absolute -bottom-4 -right-4 bg-surface border border-border rounded-xl px-4 py-2 shadow-xl"
-                initial={{ opacity: 0, scale: 0.8 }}
+                className="absolute -bottom-4 -right-4 panel px-4 py-2 rounded-soft"
+                initial={{ opacity: 0, scale: 0.85 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: dur(0.4), duration: dur(0.5), ease }}
               >
-                <p className="font-mono text-xs text-muted">Based in</p>
-                <p className="font-display text-sm font-semibold text-text">Turkey 🇹🇷</p>
+                <p className="text-xs text-muted">{about.badge.label}</p>
+                <p className="font-display text-sm font-semibold text-text">
+                  {about.badge.value}
+                </p>
               </motion.div>
-            </div>
-          </motion.div>
+            )}
+          </div>
+        </motion.div>
 
-          {/* Text column */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="space-y-5 mb-10">
-              <p className="text-text leading-relaxed text-base md:text-lg">
-                I'm Derin — a third-year aerospace engineering student focused on{' '}
-                <span className="text-accent font-medium">high-speed aerodynamics, CFD, and data-driven problem-solving</span>.
-                I like turning complex flow physics into clear, actionable results.
-              </p>
-              <p className="text-text-dim leading-relaxed">
-                I've run CFD simulations on airfoils and aerodynamic bodies across subsonic, transonic, and supersonic regimes —
-                validating against NASA data with under 5% error. I also build software on the side, from a published mobile game to student platforms.
-              </p>
-              <p className="text-accent/80 font-medium text-sm">
-                Open to internships and research opportunities in aerospace engineering.
-              </p>
-            </div>
+        {/* Metin */}
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: dur(0.8), ease }}
+        >
+          <div className="space-y-5 mb-10">
+            {about.intro.map((p, i) => (
+              <Paragraph key={i} {...p} />
+            ))}
+          </div>
 
-            {/* Currently Working On */}
+          {about.currentWork?.items?.length > 0 && (
             <div className="mb-8">
-              <p className="font-mono text-xs text-muted uppercase tracking-widest mb-4">Currently Working On</p>
+              <p className="eyebrow mb-4">{about.currentWork.title}</p>
               <div className="space-y-3">
-                {currentWork.map((item) => (
-                  <div key={item.title} className="bg-surface border border-border rounded-xl p-4 hover:border-accent/30 transition-colors duration-300">
+                {about.currentWork.items.map((item) => (
+                  <div key={item.title} className="panel panel-hover p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <item.icon size={13} className="text-accent" />
-                      <p className="font-display font-semibold text-text text-sm">{item.title}</p>
+                      <Icon name={item.icon} size={14} className="text-warm" />
+                      <p className="font-display font-semibold text-text text-sm">
+                        {item.title}
+                      </p>
                     </div>
                     <ul className="space-y-1">
                       {item.items.map((line) => (
-                        <li key={line} className="font-mono text-xs text-muted flex items-start gap-2">
-                          <span className="text-accent mt-0.5">›</span>{line}
+                        <li
+                          key={line}
+                          className="text-xs text-text-dim flex items-start gap-2"
+                        >
+                          <span className="text-accent/70 mt-px">›</span>
+                          {line}
                         </li>
                       ))}
                     </ul>
@@ -119,33 +131,38 @@ export default function About() {
                 ))}
               </div>
             </div>
+          )}
 
-            {/* Stats grid */}
+          {about.stats?.length > 0 && (
             <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, i) => (
+              {about.stats.map((stat, i) => (
                 <motion.div
                   key={stat.label}
-                  className="bg-surface border border-border rounded-xl p-4 flex items-center gap-3 hover:border-accent/30 transition-colors duration-300"
+                  className="panel panel-hover p-4 flex items-center gap-3 relative overflow-hidden"
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.2 + i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ delay: dur(0.2 + i * 0.08), duration: dur(0.5), ease }}
                 >
-                  <div className="w-9 h-9 rounded-lg bg-accent-dim flex items-center justify-center flex-shrink-0">
-                    <stat.icon size={16} className="text-accent" />
+                  {/* Kenarda dolaşan ışık — sadece ilk kutuda, dikkat dağıtmasın */}
+                  {i === 0 && <BorderTrail duration={7} />}
+                  <div className="w-9 h-9 rounded-soft bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <Icon name={stat.icon} size={16} className="text-accent" />
                   </div>
                   <div>
-                    <p className="font-display font-semibold text-text text-lg leading-none">{stat.value}</p>
-                    <p className="font-mono text-xs text-muted mt-0.5">{stat.label}</p>
+                    <p className="font-display font-semibold text-text text-lg leading-none">
+                      <AnimatedNumber value={stat.value} />
+                    </p>
+                    <p className="text-xs text-muted mt-1">{stat.label}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
-        </div>
+          )}
+        </motion.div>
       </div>
 
-      <div className="mt-24 horizon-line max-w-6xl mx-auto" />
-    </section>
+      <div className="mt-24 horizon-line" />
+    </Section>
   )
 }

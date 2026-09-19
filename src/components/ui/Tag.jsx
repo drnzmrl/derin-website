@@ -1,11 +1,13 @@
 export default function Tag({ children, variant = 'default' }) {
   const variants = {
-    default: 'bg-accent-dim text-accent border border-accent/20',
-    muted: 'bg-surface-2 text-text-dim border border-border',
-    gold: 'bg-amber-900/20 text-gold border border-amber-500/20',
+    default: 'bg-accent/10 text-accent border-accent/20',
+    muted: 'bg-text/5 text-text-dim border-text/10',
+    warm: 'bg-warm/10 text-warm border-warm/25',
   }
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-mono font-medium ${variants[variant]}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full border text-xs font-medium tracking-wide ${variants[variant]}`}
+    >
       {children}
     </span>
   )

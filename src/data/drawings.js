@@ -48,3 +48,14 @@ export const drawings = [
     category: "Experimental",
   },
 ]
+
+/* Kategori → ikon eşlemesi (çizimler).
+   İkon isimleri: https://lucide.dev/icons             */
+export const drawingCategoryIcons = {
+  Aerodynamics: 'Wind',
+  'Spacecraft Structures': 'Satellite',
+  Propulsion: 'Flame',
+  'Aircraft Design': 'Plane',
+  'Re-entry Vehicles': 'Orbit',
+  Experimental: 'FlaskConical',
+}

@@ -1,43 +1,49 @@
 import { motion } from 'framer-motion'
+import Icon from './Icon'
 
-export default function Button({ children, variant = 'primary', onClick, href, className = '', icon }) {
-  const base = 'inline-flex items-center gap-2 px-6 py-3 rounded-lg font-display font-medium text-sm tracking-wide transition-all duration-200 cursor-pointer'
+export default function Button({
+  children,
+  variant = 'solid',
+  onClick,
+  href,
+  download,
+  icon,
+  className = '',
+}) {
+  const base =
+    'inline-flex items-center gap-2 px-7 py-3.5 rounded-soft font-display font-semibold text-sm tracking-wide transition-all duration-300 cursor-pointer'
 
   const variants = {
-    primary: 'bg-accent text-background hover:bg-accent/90 shadow-lg shadow-accent/20',
-    outline: 'border border-accent/40 text-accent hover:bg-accent/10 hover:border-accent/70',
-    ghost: 'text-text-dim hover:text-text hover:bg-surface-2',
+    solid: 'bg-accent text-space hover:bg-accent/90 glow-soft',
+    warm: 'bg-warm text-space hover:bg-warm/90 glow-warm',
+    outline: 'border border-text/15 text-text hover:border-accent/50 hover:bg-accent/10',
+    ghost: 'text-text-dim hover:text-text hover:bg-text/5',
   }
 
-  const cls = `${base} ${variants[variant]} ${className}`
+  const cls = `${base} ${variants[variant] || variants.solid} ${className}`
 
   const content = (
     <>
-      {icon && <span className="w-4 h-4">{icon}</span>}
+      {icon && <Icon name={icon} size={16} />}
       {children}
     </>
   )
 
+  const motionProps = {
+    whileHover: { scale: 1.02 },
+    whileTap: { scale: 0.98 },
+  }
+
   if (href) {
     return (
-      <motion.a
-        href={href}
-        className={cls}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
+      <motion.a href={href} download={download} className={cls} {...motionProps}>
         {content}
       </motion.a>
     )
   }
 
   return (
-    <motion.button
-      onClick={onClick}
-      className={cls}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
+    <motion.button onClick={onClick} className={cls} {...motionProps}>
       {content}
     </motion.button>
   )

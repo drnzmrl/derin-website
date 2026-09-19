@@ -1,161 +1,143 @@
 import { useEffect, useRef } from 'react'
+import { rgb } from '../../config/colors'
+import { motionOff } from '../../config/applyTheme'
 
-const PARTICLE_COUNT = 55
-const ACCENT = { r: 79, g: 195, b: 247 }
-
-function rand(min, max) {
-  return Math.random() * (max - min) + min
-}
-
+/**
+ * Hero arkasındaki yumuşak yörünge katmanı:
+ * iki eliptik yörünge, üzerlerinde yavaşça dolaşan birer uydu,
+ * ve aşağıda bir gezegen kıvrımı. Izgara yok, neon yok.
+ * İmleçle hafifçe yatar (parallax).
+ */
 export default function HeroCanvas({ mousePos }) {
   const canvasRef = useRef(null)
-  const particles = useRef([])
-  const arcs = useRef([])
-  const animRef = useRef(null)
-  const mouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouse = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
-    mouseRef.current = {
-      x: (mousePos.x + 1) / 2,
-      y: (mousePos.y + 1) / 2,
-    }
+    mouse.current = mousePos
   }, [mousePos])
 
   useEffect(() => {
     const canvas = canvasRef.current
+    if (!canvas) return
     const ctx = canvas.getContext('2d')
+    const still = motionOff()
 
-    const resize = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-      initParticles()
-      initArcs()
+    const accent = rgb('accent')
+    const warm = rgb('warm')
+    const horizon = rgb('horizon')
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let w = 0
+    let h = 0
+    let raf
+    let t = 0
+    let tilt = { x: 0, y: 0 }
+
+    function resize() {
+      w = canvas.offsetWidth
+      h = canvas.offsetHeight
+      canvas.width = w * dpr
+      canvas.height = h * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
-    function initParticles() {
-      particles.current = Array.from({ length: PARTICLE_COUNT }, () => ({
-        x: rand(0, canvas.width),
-        y: rand(0, canvas.height),
-        r: rand(0.5, 1.8),
-        vx: rand(-0.12, 0.12),
-        vy: rand(-0.08, 0.08),
-        opacity: rand(0.2, 0.7),
-      }))
+    function orbit(cx, cy, rx, ry, rotation, alpha) {
+      ctx.save()
+      ctx.translate(cx, cy)
+      ctx.rotate(rotation)
+      ctx.beginPath()
+      ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2)
+      const g = ctx.createLinearGradient(-rx, 0, rx, 0)
+      g.addColorStop(0, `rgba(${accent.r},${accent.g},${accent.b},0)`)
+      g.addColorStop(0.5, `rgba(${accent.r},${accent.g},${accent.b},${alpha})`)
+      g.addColorStop(1, `rgba(${warm.r},${warm.g},${warm.b},0)`)
+      ctx.strokeStyle = g
+      ctx.lineWidth = 1
+      ctx.stroke()
+      ctx.restore()
     }
 
-    function initArcs() {
-      arcs.current = [
-        {
-          // Elliptical orbit arc 1
-          cx: canvas.width * 0.72,
-          cy: canvas.height * 0.38,
-          rx: canvas.width * 0.28,
-          ry: canvas.height * 0.18,
-          rotation: -0.3,
-          progress: 0,
-          speed: 0.0008,
-          opacity: 0.18,
-        },
-        {
-          cx: canvas.width * 0.25,
-          cy: canvas.height * 0.65,
-          rx: canvas.width * 0.22,
-          ry: canvas.height * 0.12,
-          rotation: 0.5,
-          progress: 0.4,
-          speed: 0.0005,
-          opacity: 0.12,
-        },
-      ]
+    function satellite(cx, cy, rx, ry, rotation, phase) {
+      const a = phase
+      const lx = Math.cos(a) * rx
+      const ly = Math.sin(a) * ry
+      const x = cx + lx * Math.cos(rotation) - ly * Math.sin(rotation)
+      const y = cy + lx * Math.sin(rotation) + ly * Math.cos(rotation)
+
+      const g = ctx.createRadialGradient(x, y, 0, x, y, 14)
+      g.addColorStop(0, `rgba(${horizon.r},${horizon.g},${horizon.b},0.5)`)
+      g.addColorStop(1, `rgba(${horizon.r},${horizon.g},${horizon.b},0)`)
+      ctx.beginPath()
+      ctx.arc(x, y, 14, 0, Math.PI * 2)
+      ctx.fillStyle = g
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.arc(x, y, 1.8, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(255,255,255,0.85)`
+      ctx.fill()
+    }
+
+    function planetLimb() {
+      // Ekranın altından yükselen gezegen kıvrımı + ince atmosfer halkası
+      const cx = w * 0.5
+      const cy = h * 1.62
+      const r = h * 0.95
+
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, 0, Math.PI * 2)
+      const body = ctx.createLinearGradient(0, cy - r, 0, h)
+      body.addColorStop(0, `rgba(${accent.r},${accent.g},${accent.b},0.05)`)
+      body.addColorStop(1, `rgba(${accent.r},${accent.g},${accent.b},0.015)`)
+      ctx.fillStyle = body
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, Math.PI * 1.15, Math.PI * 1.85)
+      ctx.strokeStyle = `rgba(${horizon.r},${horizon.g},${horizon.b},0.22)`
+      ctx.lineWidth = 1.4
+      ctx.stroke()
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h)
+      if (!still) t += 0.0016
+
+      // İmleç takibi yumuşatılmış parallax
+      tilt.x += (mouse.current.x * 18 - tilt.x) * 0.04
+      tilt.y += (mouse.current.y * 12 - tilt.y) * 0.04
+
+      ctx.save()
+      ctx.translate(tilt.x, tilt.y)
+
+      planetLimb()
+
+      const o1 = { cx: w * 0.68, cy: h * 0.4, rx: w * 0.3, ry: h * 0.2, rot: -0.35 }
+      const o2 = { cx: w * 0.3, cy: h * 0.62, rx: w * 0.26, ry: h * 0.14, rot: 0.42 }
+
+      orbit(o1.cx, o1.cy, o1.rx, o1.ry, o1.rot, 0.16)
+      orbit(o2.cx, o2.cy, o2.rx, o2.ry, o2.rot, 0.1)
+      satellite(o1.cx, o1.cy, o1.rx, o1.ry, o1.rot, t * 6)
+      satellite(o2.cx, o2.cy, o2.rx, o2.ry, o2.rot, -t * 4.2 + 2)
+
+      ctx.restore()
+      raf = requestAnimationFrame(draw)
     }
 
     resize()
-    window.addEventListener('resize', resize)
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      const mx = mouseRef.current.x
-      const my = mouseRef.current.y
-
-      // Draw subtle grid shifted by mouse
-      const gridOff = { x: (mx - 0.5) * 12, y: (my - 0.5) * 12 }
-      ctx.strokeStyle = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},0.04)`
-      ctx.lineWidth = 0.5
-      const gridSize = 44
-      for (let x = (gridOff.x % gridSize) - gridSize; x < canvas.width + gridSize; x += gridSize) {
-        ctx.beginPath()
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, canvas.height)
-        ctx.stroke()
-      }
-      for (let y = (gridOff.y % gridSize) - gridSize; y < canvas.height + gridSize; y += gridSize) {
-        ctx.beginPath()
-        ctx.moveTo(0, y)
-        ctx.lineTo(canvas.width, y)
-        ctx.stroke()
-      }
-
-      // Draw orbit arcs
-      arcs.current.forEach((arc) => {
-        arc.progress += arc.speed
-        if (arc.progress > 1) arc.progress = 0
-
-        ctx.save()
-        ctx.translate(arc.cx, arc.cy)
-        ctx.rotate(arc.rotation)
-        ctx.scale(1, arc.ry / arc.rx)
-
-        const endAngle = arc.progress * Math.PI * 2
-        ctx.beginPath()
-        ctx.arc(0, 0, arc.rx, 0, endAngle)
-        ctx.strokeStyle = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},${arc.opacity})`
-        ctx.lineWidth = 0.8
-        ctx.stroke()
-
-        // Leading dot
-        const dotX = Math.cos(endAngle) * arc.rx
-        const dotY = Math.sin(endAngle) * arc.rx
-        ctx.beginPath()
-        ctx.arc(dotX, dotY, 2.5, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},0.7)`
-        ctx.fill()
-
-        ctx.restore()
-      })
-
-      // Draw particles
-      particles.current.forEach((p) => {
-        p.x += p.vx + (mx - 0.5) * 0.08
-        p.y += p.vy + (my - 0.5) * 0.06
-
-        if (p.x < 0) p.x = canvas.width
-        if (p.x > canvas.width) p.x = 0
-        if (p.y < 0) p.y = canvas.height
-        if (p.y > canvas.height) p.y = 0
-
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},${p.opacity})`
-        ctx.fill()
-      })
-
-      animRef.current = requestAnimationFrame(draw)
-    }
-
     draw()
-
+    window.addEventListener('resize', resize)
     return () => {
+      cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
-      cancelAnimationFrame(animRef.current)
     }
   }, [])
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ pointerEvents: 'none' }}
+      aria-hidden="true"
+      className="absolute inset-0 w-full h-full pointer-events-none"
     />
   )
 }

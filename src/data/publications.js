@@ -50,3 +50,12 @@ export const publications = [
     pdf: null,
   },
 ]
+
+/* Yayın türü → rozet görünümü.
+   Yeni bir tür kullanırsan buraya bir satır ekle.
+   icon: https://lucide.dev/icons   tone: accent | warm | horizon */
+export const publicationTypes = {
+  'Research Paper': { icon: 'BookOpen', tone: 'accent' },
+  'Technical Report': { icon: 'FileText', tone: 'warm' },
+  Article: { icon: 'Newspaper', tone: 'horizon' },
+}
