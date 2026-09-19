@@ -1,0 +1,22 @@
+# Satır sonlarını depoda LF olarak sabitle.
+# Windows'ta çalışırken her commit'te çıkan
+# "LF will be replaced by CRLF" uyarılarını da bitirir.
+* text=auto eol=lf
+
+# İkili dosyalar — dokunma
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.woff  binary
+*.woff2 binary
+
+# Katalog JSON'ları tek satırlık ve büyük — diff'te gösterme
+public/data/*.json -diff linguist-generated
+
+# GitHub dil istatistiği: üretilmiş veri projeyi yanlış etiketlemesin
+public/data/** linguist-vendored
+public/textures/** linguist-vendored
