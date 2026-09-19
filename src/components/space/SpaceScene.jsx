@@ -182,14 +182,14 @@ export default function SpaceScene() {
       sky.rotation.x = targetX
 
       if (craft) {
-        // Roket, hero'da "Derin" yazısının hemen altında, yakın planda
-        // başlar. Kaydırdıkça burnunun baktığı yöne — aşağı, yana ve
-        // derine — ilerleyip yıldız alanının içinde küçülür.
-        const side = cfg.craftSide === 'right' ? 1 : -1
+        // Roket hero'da "Derin" yazısının yanında, onun hizasında
+        // ve yakın planda başlar. Kaydırdıkça burnunun baktığı yöne —
+        // aşağı, yana ve derine — ilerleyip yıldızların içinde küçülür.
+        const side = cfg.craftSide === 'left' ? -1 : 1
         const k = smoothP
 
-        craft.position.x = lerp(side * 0.8, side * 7, k) + Math.sin(t * 0.25) * 0.12
-        craft.position.y = lerp(-2.4, -7, k)
+        craft.position.x = lerp(side * 4.6, side * 8.5, k) + Math.sin(t * 0.25) * 0.12
+        craft.position.y = lerp(0.2, -6.5, k)
         craft.position.z = lerp(-9, -26, k)
         craft.scale.setScalar(lerp(0.9, 0.55, k))
 
