@@ -11,6 +11,12 @@ import { dur, motionOff } from '../../config/applyTheme'
  * Kaynak fikir: motion-primitives (MIT) — projeye uyarlandı.
  */
 
+/* ⚠ Gradyanlı başlıklarda (text-gradient) `filter` CANLANDIRMA.
+   Framer animasyon bitince elementte `filter: blur(0px)` bırakıyor;
+   sıfır bile olsa bir filter değeri yeni bir kapsayıcı blok yaratıyor
+   ve üst elementteki `background-clip: text` o harf için bozuluyor —
+   harf kayboluyor. Bu yüzden `launch` blur yerine ölçek kullanıyor.
+   `blur` ön ayarı yalnızca düz renkli metinler için.            */
 const PRESETS = {
   fade: {
     hidden: { opacity: 0 },
@@ -20,11 +26,12 @@ const PRESETS = {
     hidden: { opacity: 0, y: '0.45em' },
     show: { opacity: 1, y: 0 },
   },
-  // Fırlatma hissi: aşağıdan hızlanarak gelir
+  // Fırlatma hissi: aşağıdan, hafifçe büyüyerek gelir
   launch: {
-    hidden: { opacity: 0, y: '0.7em', filter: 'blur(4px)' },
-    show: { opacity: 1, y: 0, filter: 'blur(0px)' },
+    hidden: { opacity: 0, y: '0.7em', scale: 0.86 },
+    show: { opacity: 1, y: 0, scale: 1 },
   },
+  // Sadece düz renkli metinlerde kullan — gradyanlı başlıkta değil
   blur: {
     hidden: { opacity: 0, filter: 'blur(8px)' },
     show: { opacity: 1, filter: 'blur(0px)' },
@@ -84,17 +91,18 @@ export default function TextEffect({
       {...animateProps}
       aria-label={text}
     >
+      {/* overflow:hidden YOK - negatif harf araligi (tracking-tight) ve
+          olcek animasyonuyla birlikte son harfi kirpiyordu. */}
       {pieces.map((piece, i) => (
-        <span
+        <motion.span
           key={i}
           aria-hidden="true"
-          style={{ display: 'inline-block', overflow: 'hidden' }}
+          variants={child}
+          style={{ display: 'inline-block', willChange: 'transform, opacity' }}
         >
-          <motion.span variants={child} style={{ display: 'inline-block' }}>
-            {piece}
-            {per === 'word' && i < pieces.length - 1 ? ' ' : ''}
-          </motion.span>
-        </span>
+          {piece}
+          {per === 'word' && i < pieces.length - 1 ? ' ' : ''}
+        </motion.span>
       ))}
     </MotionTag>
   )

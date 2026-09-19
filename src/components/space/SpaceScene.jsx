@@ -12,10 +12,11 @@ import { motionOff } from '../../config/applyTheme'
    Yıldızlar en baştan, hero dahil her ekranda görünür.
    Kaydırdıkça gökyüzü döner, galaksiler açılır ve kadro geçer:
 
-     hero        uçak tepeden geçer, roket ismin yanından iner
-     her yerde   sağ kenarda minik uydu
-     orta        süzülen astronot
-     aşağılar    uzakta derin uzay sondası
+     hero        Dünya ve Ay; roket ismin yanından yıldızlara iner
+     %26–62      Mars
+     %52–84      Jüpiter
+     %74–100     halkalı Satürn
+     her yerde   sağda küçük bir yörüngede dolanan uydu
 
    Ayarlar: theme.config.js → space
    ══════════════════════════════════════════════════════════════ */
@@ -265,9 +266,15 @@ export default function SpaceScene() {
       }
 
       if (minisat) {
-        // Sağ kenarda sabit duruyor, sadece yerinde dönüyor —
-        // kadrajdan çıkmıyor, her ekranda görünür.
-        minisat.position.set(7.4, 2.6 - k * 1.2, -15)
+        // Sağ tarafta küçük bir yörüngede dolanıyor ama kadrajı
+        // hiç terk etmiyor: elipsin tamamı ekranın sağ yarısında.
+        // Ayrıca kaydırdıkça aşağı doğru süzülüyor.
+        const a = t * 0.13
+        minisat.position.set(
+          6.8 + Math.cos(a) * 1.7,
+          3.4 - k * 5 + Math.sin(a) * 1.2,
+          -15 + Math.sin(a * 0.7) * 3
+        )
         if (!still) minisat.userData.spin?.(dt, t)
       }
 
