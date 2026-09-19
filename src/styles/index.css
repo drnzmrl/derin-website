@@ -27,6 +27,13 @@
 
   --horizon-height: 45vh;
   --horizon-intensity: 0.5;
+
+  --text-gradient: linear-gradient(
+    120deg,
+    rgb(var(--c-text)) 0%,
+    rgb(var(--c-accent)) 45%,
+    rgb(var(--c-horizon)) 100%
+  );
 }
 
 @layer base {
@@ -145,14 +152,12 @@
 }
 
 @layer utilities {
-  /* Başlıklarda gün doğumu geçişi: soğuk mavi → sıcak turuncu */
+  /* Başlıklarda gün doğumu geçişi: soğuk mavi → sıcak turuncu.
+     Gradyan ayrı bir değişkende: harf harf canlandırılan
+     başlıklarda TextEffect aynı gradyanı her harfe dilimleyerek
+     uyguluyor (bkz. TextEffect.jsx). */
   .text-gradient {
-    background: linear-gradient(
-      120deg,
-      rgb(var(--c-text)) 0%,
-      rgb(var(--c-accent)) 45%,
-      rgb(var(--c-horizon)) 100%
-    );
+    background-image: var(--text-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

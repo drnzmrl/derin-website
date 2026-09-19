@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { theme } from '../../config/theme.config'
 import { dur, motionOff } from '../../config/applyTheme'
@@ -5,18 +6,25 @@ import { dur, motionOff } from '../../config/applyTheme'
 /**
  * Metni harf harf veya kelime kelime ortaya çıkarır.
  *
- *   <TextEffect per="char" preset="lift">Derin</TextEffect>
+ *   <TextEffect per="char" preset="launch" gradient>Derin</TextEffect>
  *   <TextEffect per="word" delay={0.4}>{site.tagline}</TextEffect>
  *
  * Kaynak fikir: motion-primitives (MIT) — projeye uyarlandı.
  */
 
-/* ⚠ Gradyanlı başlıklarda (text-gradient) `filter` CANLANDIRMA.
-   Framer animasyon bitince elementte `filter: blur(0px)` bırakıyor;
-   sıfır bile olsa bir filter değeri yeni bir kapsayıcı blok yaratıyor
-   ve üst elementteki `background-clip: text` o harf için bozuluyor —
-   harf kayboluyor. Bu yüzden `launch` blur yerine ölçek kullanıyor.
-   `blur` ön ayarı yalnızca düz renkli metinler için.            */
+/* ⚠ GRADYAN + HAREKET TUZAĞI
+   `background-clip: text` gradyanı üst elemente uygulanır ve yalnızca
+   kendi katmanında boyanır. Bir alt element `transform`, `filter` veya
+   `will-change` alırsa kendi stacking context'ine geçer; üstteki
+   gradyan oraya ulaşmaz ve harf ŞEFFAF kalır — yani kaybolur.
+
+   Harf harf canlandırma zorunlu olarak transform kullandığı için
+   çözüm, gradyanı üst elemente değil HER HARFE ayrı ayrı vermek:
+   aşağıdaki useLayoutEffect her harfin başlık içindeki yatay
+   konumunu ölçüp gradyanın o dilimini harfe atıyor. Sonuç görsel
+   olarak tek parça bir gradyan, ama her harf serbestçe hareket
+   edebiliyor.                                                      */
+
 const PRESETS = {
   fade: {
     hidden: { opacity: 0 },
@@ -31,7 +39,7 @@ const PRESETS = {
     hidden: { opacity: 0, y: '0.7em', scale: 0.86 },
     show: { opacity: 1, y: 0, scale: 1 },
   },
-  // Sadece düz renkli metinlerde kullan — gradyanlı başlıkta değil
+  // `filter` kullanır → gradient={true} ile BİRLİKTE KULLANMA
   blur: {
     hidden: { opacity: 0, filter: 'blur(8px)' },
     show: { opacity: 1, filter: 'blur(0px)' },
@@ -47,10 +55,45 @@ export default function TextEffect({
   duration = 0.6,
   as: Tag = 'span',
   className = '',
+  gradient = false,
   trigger = 'mount', // 'mount' | 'inView'
 }) {
   const text = String(children ?? '')
   const variant = PRESETS[preset] || PRESETS.lift
+  const ref = useRef(null)
+
+  /** Gradyanı parçalara bölüp her harfe kendi dilimini ver */
+  useLayoutEffect(() => {
+    if (!gradient) return
+    const host = ref.current
+    if (!host) return
+
+    const paint = () => {
+      // offsetLeft/offsetWidth kullanılıyor, getBoundingClientRect DEĞİL:
+      // ikincisi transform'u da hesaba katıyor ve harfler animasyonun
+      // başında ölçeklenmiş olduğu için dilimler kayıyordu.
+      const width = host.offsetWidth
+      if (!width) return
+      const base = host.offsetLeft
+      for (const el of host.children) {
+        el.style.backgroundImage = 'var(--text-gradient)'
+        el.style.backgroundSize = `${width}px 100%`
+        el.style.backgroundPosition = `${-(el.offsetLeft - base)}px 0`
+        el.style.backgroundRepeat = 'no-repeat'
+        el.style.webkitBackgroundClip = 'text'
+        el.style.backgroundClip = 'text'
+        el.style.webkitTextFillColor = 'transparent'
+      }
+    }
+
+    paint()
+    // Yazı tipi sonradan gelirse harf genişlikleri değişir
+    document.fonts?.ready.then(paint)
+
+    const ro = new ResizeObserver(paint)
+    ro.observe(host)
+    return () => ro.disconnect()
+  }, [gradient, text, per])
 
   // Hareket kapalıysa düz metin bas — okunabilirlik önce gelir
   if (motionOff()) {
@@ -85,20 +128,22 @@ export default function TextEffect({
 
   return (
     <MotionTag
+      ref={ref}
       className={className}
       variants={container}
       initial="hidden"
       {...animateProps}
       aria-label={text}
     >
-      {/* overflow:hidden YOK - negatif harf araligi (tracking-tight) ve
-          olcek animasyonuyla birlikte son harfi kirpiyordu. */}
+      {/* overflow:hidden ve will-change YOK — ilki negatif harf
+          aralığında son harfi kırpıyor, ikincisi stacking context
+          yaratıp gradyanı bozuyordu. */}
       {pieces.map((piece, i) => (
         <motion.span
           key={i}
           aria-hidden="true"
           variants={child}
-          style={{ display: 'inline-block', willChange: 'transform, opacity' }}
+          style={{ display: 'inline-block', whiteSpace: 'pre' }}
         >
           {piece}
           {per === 'word' && i < pieces.length - 1 ? ' ' : ''}

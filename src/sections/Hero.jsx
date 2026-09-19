@@ -100,6 +100,7 @@ export default function Hero({ config }) {
               delay={0.4}
               stagger={0.05}
               duration={0.8}
+              gradient
               className="font-display text-6xl md:text-8xl lg:text-9xl font-semibold tracking-tight text-gradient leading-none"
             >
               {site.name}
