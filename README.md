@@ -43,6 +43,18 @@ npm run build
 
 ---
 
+## Yayına alma
+
+Vercel'e bağlı; `main` dalına her push otomatik yayına gider.
+Yapılandırma [vercel.json](vercel.json) içinde — çerçeve, derleme
+komutu ve katalog/doku dosyaları için önbellek başlıkları.
+
+Sıfırdan bağlamak istersen: [vercel.com/new](https://vercel.com/new)
+→ GitHub ile giriş → depoyu içe aktar. Vite kendiliğinden tanınır,
+ayar değiştirmen gerekmez. Private repoyla da çalışır.
+
+---
+
 ## Yapı
 
 ```
