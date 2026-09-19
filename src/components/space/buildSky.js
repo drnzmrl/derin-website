@@ -68,11 +68,19 @@ function makePoints({ positions, colors, sizes, halo, scale }) {
  * Konum gerçek RA/Dec, renk gerçek B-V renk indeksinden,
  * boyut gerçek görünür kadirden — takımyıldızlar yerli yerinde.
  */
-export function buildStars(data, { radius = 900, scale = 1 } = {}) {
-  const list = data?.stars
-  if (!list?.length) return null
+export function buildStars(
+  data,
+  { radius = 900, scale = 1, magLimit = 5.5, boost = 1.7 } = {}
+) {
+  const all = data?.stars
+  if (!all?.length) return null
 
+  // Sönük yıldızları ele: daha az nokta = daha az dolgu maliyeti.
+  // Kalanların parlaklığını artırınca gökyüzü daha da belirgin duruyor.
+  const list = all.filter((s) => s[2] <= magLimit)
   const n = list.length
+  if (!n) return null
+
   const positions = new Float32Array(n * 3)
   const colors = new Float32Array(n * 3)
   const sizes = new Float32Array(n)
@@ -85,12 +93,12 @@ export function buildStars(data, { radius = 900, scale = 1 } = {}) {
     positions[i * 3 + 2] = z
 
     const [r, g, b] = bvToRgb(ci)
-    const br = magToBrightness(mag)
+    const br = Math.min(1.35, magToBrightness(mag, magLimit) * boost)
     colors[i * 3] = r * br
     colors[i * 3 + 1] = g * br
     colors[i * 3 + 2] = b * br
 
-    sizes[i] = magToSize(mag)
+    sizes[i] = magToSize(mag, { faintest: magLimit, min: 1.1, max: 5.5 })
   }
 
   return makePoints({ positions, colors, sizes, halo: 0.2, scale })
@@ -100,11 +108,18 @@ export function buildStars(data, { radius = 900, scale = 1 } = {}) {
  * OpenNGC kataloğundaki gerçek galaksiler, bulutsular, kümeler.
  * Renk türe göre, boyut gerçek açısal büyüklükten.
  */
-export function buildDeepSky(data, { radius = 880, scale = 1 } = {}) {
-  const list = data?.objects
-  if (!list?.length) return null
+export function buildDeepSky(
+  data,
+  { radius = 880, scale = 1, magLimit = 11, boost = 1.5 } = {}
+) {
+  const all = data?.objects
+  if (!all?.length) return null
 
+  // Galaksi noktaları büyük ve toplamalı karışımlı — en pahalı katman.
+  // Sönükleri elemek kare hızını gözle görülür rahatlatıyor.
+  const list = all.filter((o) => (o.m ?? 99) <= magLimit)
   const n = list.length
+  if (!n) return null
   const positions = new Float32Array(n * 3)
   const colors = new Float32Array(n * 3)
   const sizes = new Float32Array(n)
@@ -118,13 +133,14 @@ export function buildDeepSky(data, { radius = 880, scale = 1 } = {}) {
 
     const [r, g, b] = DEEP_SKY_COLORS[o.t] || DEEP_SKY_COLORS.g
     const mag = o.m ?? 13
-    const br = Math.max(0.12, Math.min(1, (15.5 - mag) / 8))
+    const br = Math.min(1.3, Math.max(0.25, (magLimit + 2 - mag) / 7) * boost)
     colors[i * 3] = r * br
     colors[i * 3 + 1] = g * br
     colors[i * 3 + 2] = b * br
 
+    // Üst sınır düşürüldü: dev halelerin üst üste binmesi pahalıydı
     const arcmin = o.s ?? 2
-    sizes[i] = Math.min(16, 2 + Math.sqrt(arcmin) * 1.7)
+    sizes[i] = Math.min(9, 2 + Math.sqrt(arcmin) * 1.35)
   }
 
   return makePoints({ positions, colors, sizes, halo: 1, scale })

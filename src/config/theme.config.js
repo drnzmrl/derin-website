@@ -47,14 +47,38 @@ export const theme = {
      (daha hafif ama procedural).                              */
   space: {
     enabled: true,
-    opacity: 0.9,
+    opacity: 1,
 
-    /* Sol tarafta kaydırdıkça tırmanan araç.
-       'rocket' | 'probe' | 'satellite' | false (kapalı) */
-    craft: 'rocket',
-    craftSide: 'left',   // 'left' | 'right' — hero'da ismin hangi yanında
-    craftFlame: true,    // roketin egzoz alevi
-    orbiter: true,       // arkada yerinde yavaşça dönen uydu
+    /* Yıldız yoğunluğu ↔ performans dengesi.
+       starMag: kadir sınırı. DÜŞÜRÜNCE yıldız sayısı hızla azalır.
+         6.5 → 8920 yıldız (çıplak göz sınırı, en ağırı)
+         5.5 → ~2900
+         4.5 → ~900   (az ama iri ve parlak)
+       starBoost: kalanların parlaklık çarpanı.               */
+    starMag: 5.2,
+    starBoost: 1.8,
+
+    /* Derin gök cisimleri (galaksi/bulutsu/küme).
+       En pahalı katman — büyük haleler üst üste biniyor.
+         14.5 → 6442 nesne
+         11   → ~1000
+         10   → ~600                                          */
+    deepSkyMag: 10.5,
+    deepSkyBoost: 1.6,
+
+    /* Zayıf cihazda kendini otomatik kıssın (ilk 3 saniyeyi ölçer) */
+    autoQuality: true,
+
+    /* ---- Sahnedeki kadro ---- Her biri tek tek kapatılabilir. */
+    craft: {
+      rocket: true,     // hero'da ismin yanından başlayıp yıldızlara iner
+      plane: true,      // hero'nun tepesinden geçen uçak
+      satellite: true,  // sağ kenarda duran minik uydu
+      astronaut: true,  // sayfanın ortasında süzülen astronot
+      probe: true,      // aşağılarda, uzakta derin uzay sondası
+    },
+    rocketSide: 'left',  // 'left' | 'right'
+    rocketFlame: true,
   },
 
   /* ---- 2B yıldız alanı (3B kapalıyken yedek) ----

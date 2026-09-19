@@ -239,9 +239,113 @@ export function buildMiniSat() {
   return g
 }
 
+/**
+ * Serbest yüzen astronot — düşük poligonlu, yavaşça takla atıyor.
+ * Kask altın vizörlü; gövde ve uzuvlar basit kapsüller.
+ */
+export function buildAstronaut() {
+  const g = new THREE.Group()
+  const suit = metal('#EDF0F7', 0.15, 0.75)
+  const joint = metal('#AFB8CC', 0.3, 0.6)
+
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.3, 0.42, 4, 10), suit)
+  g.add(torso)
+
+  // Sırt yaşam destek ünitesi
+  const pack = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.5, 0.2), metal('#8B94A8', 0.5, 0.5))
+  pack.position.z = -0.32
+  g.add(pack)
+
+  // Kask
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.27, 16, 12), suit)
+  helmet.position.y = 0.58
+  g.add(helmet)
+
+  // Altın vizör
+  const visor = new THREE.Mesh(
+    new THREE.SphereGeometry(0.255, 16, 10, -0.9, 1.8, 0.7, 1.0),
+    new THREE.MeshStandardMaterial({
+      color: '#D9A03C',
+      metalness: 0.95,
+      roughness: 0.12,
+      side: THREE.DoubleSide,
+    })
+  )
+  visor.position.y = 0.58
+  visor.position.z = 0.02
+  g.add(visor)
+
+  // Kollar ve bacaklar
+  const limb = (x, y, z, rz) => {
+    const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.38, 3, 8), joint)
+    m.position.set(x, y, z)
+    m.rotation.z = rz
+    g.add(m)
+  }
+  limb(-0.42, 0.12, 0, 0.75)
+  limb(0.42, 0.06, 0, -1.05)
+  limb(-0.17, -0.62, 0, 0.2)
+  limb(0.17, -0.6, 0, -0.32)
+
+  g.userData.spin = (dt, t) => {
+    g.rotation.y += dt * 0.16
+    g.rotation.z = Math.sin(t * 0.22) * 0.35
+    g.rotation.x = Math.cos(t * 0.17) * 0.22
+  }
+  return g
+}
+
+/**
+ * Hero'nun tepesinden geçen uçak.
+ * 4 parça + ince bir iz; maliyeti ihmal edilebilir.
+ */
+export function buildPlane() {
+  const g = new THREE.Group()
+  const shell = metal('#E4E9F4', 0.4, 0.45)
+
+  const fuselage = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.85, 3, 8), shell)
+  fuselage.rotation.z = Math.PI / 2
+  g.add(fuselage)
+
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.025, 1.5), shell)
+  wing.position.x = -0.05
+  g.add(wing)
+
+  const tailWing = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.02, 0.55), shell)
+  tailWing.position.x = -0.5
+  g.add(tailWing)
+
+  const fin = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.28, 0.02), shell)
+  fin.position.set(-0.5, 0.13, 0)
+  g.add(fin)
+
+  // Arkada bırakılan ince yoğuşma izi (2 üçgen)
+  const trail = new THREE.Mesh(
+    new THREE.PlaneGeometry(6, 0.06),
+    new THREE.MeshBasicMaterial({
+      color: '#FFFFFF',
+      transparent: true,
+      opacity: 0.16,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    })
+  )
+  trail.position.x = -3.1
+  g.add(trail)
+  g.userData.trail = trail
+
+  g.userData.spin = (dt, t) => {
+    g.rotation.z = Math.sin(t * 0.6) * 0.04
+  }
+  return g
+}
+
 export const CRAFT_BUILDERS = {
   satellite: buildSatellite,
   rocket: buildRocket,
   probe: buildProbe,
   minisat: buildMiniSat,
+  astronaut: buildAstronaut,
+  plane: buildPlane,
 }

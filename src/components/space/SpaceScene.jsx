@@ -8,18 +8,21 @@ import { motionOff } from '../../config/applyTheme'
 /* ══════════════════════════════════════════════════════════════
    Sayfanın arkasındaki gökyüzü — saf three.js (React yok).
 
-   Gerçek kataloglar:
-     • 8.920 yıldız        — HYG v4.4
-     • 6.442 gök cismi     — OpenNGC (5.500'ü gerçek galaksi)
+   Yıldızlar en baştan, hero dahil her ekranda görünür.
+   Kaydırdıkça gökyüzü döner, galaksiler açılır ve kadro geçer:
 
-   Yıldızlar ta baştan, hero'da da görünür; aşağı indikçe
-   gökyüzü açılır, galaksiler belirir, bir uydu geçer.
+     hero        uçak tepeden geçer, roket ismin yanından iner
+     her yerde   sağ kenarda minik uydu
+     orta        süzülen astronot
+     aşağılar    uzakta derin uzay sondası
 
    Ayarlar: theme.config.js → space
    ══════════════════════════════════════════════════════════════ */
 
 const lerp = (a, b, t) => a + (b - a) * t
 const ramp = (p, a, b) => Math.min(1, Math.max(0, (p - a) / Math.max(1e-4, b - a)))
+/** Bir aralıkta girip çıkan yumuşak görünürlük (0→1→0) */
+const window01 = (p, a, b) => Math.sin(ramp(p, a, b) * Math.PI)
 
 export default function SpaceScene() {
   const hostRef = useRef(null)
@@ -31,13 +34,12 @@ export default function SpaceScene() {
     const host = hostRef.current
     if (!host) return
 
-    // WebGL yoksa sessizce vazgeç — sayfa gradyanla çalışmaya devam eder
     let renderer
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
         antialias: false,
-        powerPreference: 'low-power',
+        powerPreference: 'high-performance',
       })
     } catch (e) {
       console.warn('[sky] WebGL baslatilamadi:', e.message)
@@ -46,8 +48,10 @@ export default function SpaceScene() {
 
     const mobile = window.matchMedia('(max-width: 767px)').matches
     const still = motionOff()
+    const craftCfg = cfg.craft || {}
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.5))
+    let dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.25)
+    renderer.setPixelRatio(dpr)
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setClearColor(0x000000, 0)
     renderer.domElement.style.cssText = 'width:100%;height:100%;display:block'
@@ -61,47 +65,60 @@ export default function SpaceScene() {
       3000
     )
 
-    // Gök küresi: kaydırdıkça döner, gökyüzünde yol alırsın
     const sky = new THREE.Group()
     scene.add(sky)
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.4))
-    const key = new THREE.DirectionalLight(0xfff1e0, 1.7)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
+    const key = new THREE.DirectionalLight(0xfff1e0, 1.8)
     key.position.set(5, 3, 5)
     scene.add(key)
-    const fill = new THREE.DirectionalLight(0x9dbeff, 0.4)
+    const fill = new THREE.DirectionalLight(0x9dbeff, 0.45)
     fill.position.set(-6, -2, -4)
     scene.add(fill)
 
-    const pixelScale = mobile ? 0.75 : 1
+    const pixelScale = mobile ? 0.8 : 1
 
-    // Katalog gelene kadar gökyüzü boş kalmasın
-    const dust = buildDust(mobile ? 700 : 1400, { scale: pixelScale })
+    const dust = buildDust(mobile ? 450 : 900, { scale: pixelScale })
     sky.add(dust)
 
     let stars = null
     let deepSky = null
-    let craft = null
 
-    const build = cfg.craft ? CRAFT_BUILDERS[cfg.craft] : null
-    if (build && !mobile) {
-      craft = build()
-      if (cfg.craftFlame === false && craft.userData.flame) {
-        craft.userData.flame.visible = false
+    // ---- Kadro ----
+    const make = (name, on) =>
+      on && !still ? CRAFT_BUILDERS[name]() : null
+
+    const rocket = craftCfg.rocket ? CRAFT_BUILDERS.rocket() : null
+    if (rocket) {
+      if (cfg.rocketFlame === false && rocket.userData.flame) {
+        rocket.userData.flame.visible = false
       }
-      scene.add(craft)
+      scene.add(rocket)
     }
 
-    // Arkada, çok uzakta, geniş bir yörüngede dolanan minik uydu.
-    // 3 parça + ışık hesabı yok → kare hızına etkisi yok denecek kadar az.
-    let orbiter = null
-    if (cfg.orbiter !== false && !mobile) {
-      orbiter = CRAFT_BUILDERS.minisat()
-      orbiter.scale.setScalar(1.8)
-      scene.add(orbiter)
+    const plane = make('plane', craftCfg.plane && !mobile)
+    if (plane) scene.add(plane)
+
+    const minisat = craftCfg.satellite ? CRAFT_BUILDERS.minisat() : null
+    if (minisat) {
+      // Sağ kenarda, tamamen kadraja girecek kadar içeride ve küçük
+      minisat.scale.setScalar(1.15)
+      scene.add(minisat)
     }
 
-    // ---- Kataloglar (paketin dışında, ayrı indirilir) ----
+    const astronaut = make('astronaut', craftCfg.astronaut && !mobile)
+    if (astronaut) {
+      astronaut.visible = false
+      scene.add(astronaut)
+    }
+
+    const probe = make('probe', craftCfg.probe && !mobile)
+    if (probe) {
+      probe.visible = false
+      scene.add(probe)
+    }
+
+    // ---- Kataloglar ----
     let disposed = false
     const load = (url) =>
       fetch(url)
@@ -113,19 +130,27 @@ export default function SpaceScene() {
 
     load('/data/stars.json').then((d) => {
       if (disposed || !d) return
-      stars = buildStars(d, { scale: pixelScale })
+      stars = buildStars(d, {
+        scale: pixelScale,
+        magLimit: mobile ? Math.min(cfg.starMag ?? 5.2, 4.5) : cfg.starMag ?? 5.2,
+        boost: cfg.starBoost ?? 1.8,
+      })
       if (stars) sky.add(stars)
     })
 
     if (!mobile) {
       load('/data/deepsky.json').then((d) => {
         if (disposed || !d) return
-        deepSky = buildDeepSky(d, { scale: pixelScale })
+        deepSky = buildDeepSky(d, {
+          scale: pixelScale,
+          magLimit: cfg.deepSkyMag ?? 10.5,
+          boost: cfg.deepSkyBoost ?? 1.6,
+        })
         if (deepSky) sky.add(deepSky)
       })
     }
 
-    // ---- Kaydırma ilerlemesi ----
+    // ---- Kaydırma ----
     let progress = 0
     const readScroll = () => {
       const max = document.body.scrollHeight - window.innerHeight
@@ -139,19 +164,47 @@ export default function SpaceScene() {
       camera.updateProjectionMatrix()
       readScroll()
     }
-
     window.addEventListener('scroll', readScroll, { passive: true })
     window.addEventListener('resize', onResize)
 
-    // Sekme arkadayken çizme
     let running = true
     const onVisibility = () => {
       running = !document.hidden
-      if (running) tick()
+      if (running) {
+        clock.getDelta() // birikmiş süreyi at
+        tick()
+      }
     }
     document.addEventListener('visibilitychange', onVisibility)
 
-    // ---- Çizim döngüsü ----
+    // ---- Otomatik kalite: ilk saniyeleri ölç, yavaşsa kıs ----
+    let frames = 0
+    let elapsed = 0
+    let degraded = false
+    const checkQuality = (dt) => {
+      if (!cfg.autoQuality || degraded || still) return
+      frames++
+      elapsed += dt
+      if (elapsed < 3) return
+      const fps = frames / elapsed
+      if (fps < 45) {
+        degraded = true
+        // Önce en pahalı katmanı at, sonra çözünürlüğü düşür
+        if (deepSky) {
+          sky.remove(deepSky)
+          deepSky.geometry.dispose()
+          deepSky.material.dispose()
+          deepSky = null
+        }
+        dpr = 1
+        renderer.setPixelRatio(1)
+        console.info(`[sky] ${fps.toFixed(0)} fps — sahne otomatik sadelestirildi`)
+      } else {
+        // Yeterince akıcı; bir daha ölçme
+        degraded = true
+      }
+    }
+
     const clock = new THREE.Clock()
     let raf = null
     let smoothP = 0
@@ -166,54 +219,81 @@ export default function SpaceScene() {
 
       const dt = Math.min(clock.getDelta(), 0.05)
       const t = clock.elapsedTime
+      checkQuality(dt)
+
       smoothP = lerp(smoothP, progress, Math.min(1, dt * 4))
+      const k = smoothP
+      const op = cfg.opacity ?? 1
 
-      // Yıldızlar en baştan görünür (hero dahil), aşağı inince güçlenir.
-      // Şafak ışığı yüzünden tepede biraz sönük olmaları doğal duruyor.
-      setOpacity(stars, lerp(0.5, 1, ramp(smoothP, 0, 0.45)) * (cfg.opacity ?? 1))
-      setOpacity(dust, lerp(0.55, 0.9, ramp(smoothP, 0, 0.5)) * (cfg.opacity ?? 1))
-      // Galaksiler biraz daha geç açılır — derinleştikçe ortaya çıkar
-      setOpacity(deepSky, ramp(smoothP, 0.08, 0.55) * (cfg.opacity ?? 1))
+      // Yıldızlar her ekranda görünür; aşağıda biraz daha güçlenir
+      setOpacity(stars, lerp(0.72, 1, ramp(k, 0, 0.4)) * op)
+      setOpacity(dust, lerp(0.5, 0.85, ramp(k, 0, 0.5)) * op)
+      setOpacity(deepSky, ramp(k, 0.05, 0.5) * op)
 
-      // Gök küresi kaydırmaya göre döner + çok yavaş sürekli kayma
-      const targetY = smoothP * Math.PI * 0.85 + (still ? 0 : t * 0.005)
-      const targetX = -0.22 + smoothP * 0.45
-      sky.rotation.y = targetY
-      sky.rotation.x = targetX
+      sky.rotation.y = k * Math.PI * 0.85 + (still ? 0 : t * 0.005)
+      sky.rotation.x = -0.22 + k * 0.45
 
-      if (craft) {
-        // Roket hero'da "Derin" yazısının yanında, onun hizasında
-        // ve yakın planda başlar. Kaydırdıkça burnunun baktığı yöne —
-        // aşağı, yana ve derine — ilerleyip yıldızların içinde küçülür.
-        const side = cfg.craftSide === 'left' ? -1 : 1
-        const k = smoothP
-
-        craft.position.x = lerp(side * 4.6, side * 8.5, k) + Math.sin(t * 0.25) * 0.12
-        craft.position.y = lerp(0.2, -6.5, k)
-        craft.position.z = lerp(-9, -26, k)
-        craft.scale.setScalar(lerp(0.9, 0.55, k))
-
-        if (!still) craft.userData.spin?.(dt, t)
+      if (rocket) {
+        const side = cfg.rocketSide === 'right' ? 1 : -1
+        rocket.position.x = lerp(side * 4.6, side * 8.5, k) + Math.sin(t * 0.25) * 0.12
+        rocket.position.y = lerp(0.2, -6.5, k)
+        rocket.position.z = lerp(-9, -26, k)
+        rocket.scale.setScalar(lerp(0.9, 0.55, k))
+        if (!still) rocket.userData.spin?.(dt, t)
       }
 
-      if (orbiter && !still) {
-        // Eğik bir yörünge düzleminde yavaşça dolanır.
-        // Tam tur ~2 dakika; kameranın arkasına geçince doğal olarak kaybolur.
-        const a = t * 0.055
-        const rx = 16
-        const rz = 22
-        const tiltY = 0.42 // yörünge düzleminin eğimi
-        const ox = Math.cos(a) * rx
-        const oz = Math.sin(a) * rz
-        orbiter.position.set(ox, 4 + Math.sin(a) * rz * tiltY * 0.35, oz - 14)
-        orbiter.userData.spin?.(dt, t)
+      if (plane) {
+        // Yalnızca hero'da: tepeden soldan sağa geçer, sonra başa döner
+        const show = k < 0.22
+        plane.visible = show
+        if (show) {
+          const cross = (t * 0.055) % 1
+          plane.position.set(-22 + cross * 44, 5.6 - k * 4, -20)
+          plane.scale.setScalar(1.25)
+          // Kadrajın kenarlarında görünmesin
+          const edge = Math.min(1, Math.min(cross, 1 - cross) * 6)
+          const fade = edge * (1 - ramp(k, 0.1, 0.22))
+          if (plane.userData.trail) plane.userData.trail.material.opacity = 0.16 * fade
+          plane.visible = fade > 0.02
+          if (!still) plane.userData.spin?.(dt, t)
+        }
+      }
+
+      if (minisat) {
+        // Sağ kenarda sabit duruyor, sadece yerinde dönüyor —
+        // kadrajdan çıkmıyor, her ekranda görünür.
+        minisat.position.set(7.4, 2.6 - k * 1.2, -15)
+        if (!still) minisat.userData.spin?.(dt, t)
+      }
+
+      if (astronaut) {
+        const vis = window01(k, 0.28, 0.72)
+        astronaut.visible = vis > 0.03
+        if (astronaut.visible) {
+          astronaut.position.set(
+            -6.2 + Math.sin(t * 0.12) * 0.5,
+            lerp(3.5, -3.5, ramp(k, 0.28, 0.72)),
+            -13
+          )
+          astronaut.scale.setScalar(0.85 + vis * 0.35)
+          astronaut.userData.spin?.(dt, t)
+        }
+      }
+
+      if (probe) {
+        const vis = window01(k, 0.62, 1)
+        probe.visible = vis > 0.03
+        if (probe.visible) {
+          probe.position.set(5.5, lerp(3, -1.5, ramp(k, 0.62, 1)), -22)
+          probe.scale.setScalar(0.7 + vis * 0.3)
+          probe.userData.spin?.(dt, t)
+        }
       }
 
       renderer.render(scene, camera)
     }
     tick()
 
-    // ---- Temizlik ----
     return () => {
       disposed = true
       running = false

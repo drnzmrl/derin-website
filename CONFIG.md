@@ -149,17 +149,54 @@ yani takımyıldızlar olması gereken yerde.
 ```js
 space: {
   enabled: true,      // false → hafif 2B yıldız alanına düşer
-  opacity: 0.9,
-  craft: 'rocket',    // 'rocket' | 'probe' | 'satellite' | false
-  craftSide: 'left',
-  craftFlame: true,
-  orbiter: true,      // arkada yörüngede dolanan minik uydu
+  opacity: 1,
+
+  starMag: 5.2,       // yıldız kadir sınırı (aşağıya bak)
+  starBoost: 1.8,     // kalan yıldızların parlaklık çarpanı
+  deepSkyMag: 10.5,   // galaksi/bulutsu kadir sınırı
+  deepSkyBoost: 1.6,
+
+  autoQuality: true,  // yavaş cihazda kendini otomatik kıssın
+
+  craft: {
+    rocket: true,     // hero'da ismin yanından başlayıp yıldızlara iner
+    plane: true,      // hero'nun tepesinden geçen uçak
+    satellite: true,  // sağ kenarda duran minik uydu
+    astronaut: true,  // sayfanın ortasında süzülen astronot
+    probe: true,      // aşağılarda, uzakta derin uzay sondası
+  },
+  rocketSide: 'left', // 'left' | 'right'
+  rocketFlame: true,
 }
 ```
 
-Performans notu: sahne mobilde kendiliğinden sadeleşir, sekme arkaya
-geçince çizmeyi durdurur, sistem "hareketi azalt" diyorsa hiç açılmaz.
-three.js ayrı bir parça olarak yükleniyor — ilk açılışı yavaşlatmaz.
+### Kasıyorsa ne yapmalı
+
+En pahalı şey nokta sayısı değil, **noktaların kapladığı piksel alanı**
+(toplamalı karışım üst üste biniyor). En etkili ayar kadir sınırları —
+sayıyı düşürmek yıldız sayısını hızla azaltır:
+
+| `starMag` | yıldız sayısı |
+|---|---|
+| 6.5 | 8920 (çıplak göz sınırı) |
+| 5.2 | 2072 ← şu anki |
+| 4.5 | 925 (az ama iri ve parlak) |
+
+| `deepSkyMag` | gök cismi |
+|---|---|
+| 14.5 | 6442 |
+| 10.5 | 713 ← şu anki |
+
+Azaltırken `starBoost` / `deepSkyBoost` değerlerini artır — daha az ama
+daha parlak yıldız, genelde daha iyi de duruyor.
+
+Hâlâ ağırsa sırayla: `craft.astronaut` / `craft.probe` kapat →
+`deepSkyMag: 9` → `space.enabled: false` (2B yıldız alanına düşer).
+
+Sahne zaten mobilde kendiliğinden sadeleşiyor, sekme arkaya geçince
+çizmeyi durduruyor, sistem "hareketi azalt" diyorsa hiç açılmıyor ve
+ilk 3 saniyede 45 fps altını görürse galaksileri atıp çözünürlüğü
+düşürüyor. three.js ayrı parça — ilk açılışı yavaşlatmaz.
 
 Veri dosyaları `public/data/` altında; oradaki `README.md` kaynakları
 ve alanları anlatıyor. Her ikisi de CC BY-SA 4.0, atıf altbilgide.

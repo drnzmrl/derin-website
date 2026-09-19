@@ -1,15 +1,12 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
-import HeroCanvas from '../components/canvas/HeroCanvas'
 import Icon from '../components/ui/Icon'
 import { TextEffect, Magnetic } from '../components/motion'
-import { useCursorPosition } from '../hooks/useCursorPosition'
 import { site } from '../config/site.config'
 import { theme } from '../config/theme.config'
 import { dur } from '../config/applyTheme'
 
 export default function Hero({ config }) {
-  const { normalized } = useCursorPosition()
   const { scrollY } = useScroll()
   const contentY = useTransform(scrollY, [0, 600], [0, -80])
   const contentOpacity = useTransform(scrollY, [0, 420], [1, 0])
@@ -70,7 +67,6 @@ export default function Hero({ config }) {
       id={config?.key || 'hero'}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
-      <HeroCanvas mousePos={normalized} />
 
       {/* Merkezde çok yumuşak bir aydınlanma */}
       <div

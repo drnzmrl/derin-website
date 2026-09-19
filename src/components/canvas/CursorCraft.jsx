@@ -185,14 +185,21 @@ export default function CursorCraft() {
     }
 
     const tick = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
       vx = (vx + (mouseX - px) * FOLLOW) * DAMPING
       vy = (vy + (mouseY - py) * FOLLOW) * DAMPING
       px += vx
       py += vy
 
       const speed = Math.hypot(vx, vy)
+
+      // İmleç durduysa ve iz tükendiyse görüntü değişmiyor demektir —
+      // tam ekran temizleyip yeniden çizmeye gerek yok.
+      if (speed < 0.02 && trail.length === 0) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
       if (speed > 0.3) angle = Math.atan2(vy, vx)
 
       // İz parçacıkları — hız arttıkça yoğunlaşır
