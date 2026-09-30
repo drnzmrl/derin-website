@@ -72,7 +72,7 @@ export const projects = [
     description:
       'Steady 2D RANS simulations (k-ω SST) of both airfoils at 0°, 8° and 16° across subsonic, transonic and supersonic regimes in ANSYS Fluent, with a mesh independence study and y⁺ control near the wall.',
     outcome:
-      'Subsonic lift stayed within 5% of NASA wind tunnel data: 0.8% off at 8° and 1.8% at 16° for the NACA 0012 (Ladson, 1988). The one outlier is the NACA 2415 at 16°, where the experiment has already stalled and the steady solution has not. At Mach 1.2, linearized theory overpredicts lift by 20 to 34%, which fits a thick, cambered section.',
+      'Subsonic lift stayed within 5% of NASA wind tunnel data: 0.8% off at 8° and 1.7% at 16° for the NACA 0012 (Ladson, 1988). The one outlier is the NACA 2415 at 16°, where the experiment has already stalled and the steady solution has not. At Mach 1.2, linearized theory overpredicts lift by 20 to 34%, which fits a thick, cambered section.',
     tools: ['ANSYS Fluent', 'k-ω SST', 'MATLAB'],
     metrics: [
       { value: '0.8%', label: 'CL error at 8°, NACA 0012' },

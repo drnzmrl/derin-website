@@ -13,7 +13,8 @@ const VIEW_W = 1.8 // ekranda görünen genişlik (veter)
 const VIEW_H = 1.1 // ekranda görünen en az yükseklik (veter)
 const VIEW_CX = 0.5 // görünümün yatay merkezi
 
-const fmt = (v, d = 3) => (Math.abs(v) < 5e-4 ? '0.000' : v.toFixed(d))
+// Sıfıra çok yakın değerler (ör. simetrik profilde 0° kaldırma, -4e-6) "-0.000" yazmasın
+const fmt = (v, d = 3) => (Math.abs(v) < 0.5 * 10 ** -d ? (0).toFixed(d) : v.toFixed(d))
 const pct = (a, b) => (Math.abs(b) < 1e-6 ? null : (Math.abs(a - b) / Math.abs(b)) * 100)
 
 /** Sayıyı yumuşakça hedefe götürür */
@@ -373,6 +374,12 @@ function LiftChart({ foil, runIdx, aoaIdx }) {
 
   return (
     <svg viewBox={`0 0 ${Wd} ${Ht}`} className="w-full h-auto" role="img" aria-label={`Lift coefficient against angle of attack for ${foil.label}`}>
+      <defs>
+        {/* eğriler eksen alanının dışına taşmasın (NACA 2415 verisi -8°'den başlıyor) */}
+        <clipPath id="lift-plot">
+          <rect x={pad.l} y={pad.t} width={Wd - pad.l - pad.r} height={Ht - pad.t - pad.b} />
+        </clipPath>
+      </defs>
       {/* ızgara */}
       {[-0.5, 0, 0.5, 1, 1.5].map((v) => (
         <g key={v}>
@@ -391,6 +398,7 @@ function LiftChart({ foil, runIdx, aoaIdx }) {
         C<tspan dy="2" fontSize="7">L</tspan>
       </text>
 
+      <g clipPath="url(#lift-plot)">
       {/* NASA deneyi (düşük hız); transonik/süpersonikte soluk */}
       <g style={{ opacity: run.mach < 0.7 ? 1 : 0.35 }}>
         <path d={line(foil.nasa.aoa, foil.nasa.CL)} fill="none" strokeWidth="1.2" style={{ stroke: c('text', 0.45) }} />
@@ -434,6 +442,7 @@ function LiftChart({ foil, runIdx, aoaIdx }) {
         animate={{ cx: X(AOA[aoaIdx]), cy: Y(run.CL[aoaIdx]) }}
         transition={{ duration: dur(0.5), ease: theme.motion.ease }}
       />
+      </g>
     </svg>
   )
 }

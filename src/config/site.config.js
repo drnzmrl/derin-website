@@ -16,9 +16,9 @@ export const site = {
     short: 'NCC',                            // kampüs kısaltması
     logo: '/images/shared/metu-logo.png',    // ODTÜ logosu
   },
-  /* Bölüm sıralaması. CV'de "7 / 35 among 3rd-year students" yazıyor.
+  /* Bölüm sıralaması (Eylül 2026: 4 / 33, 4. sınıf).
      Güncellenirse sadece burayı değiştir; gizlemek için: rank: null */
-  rank: { value: '7 / 35', label: 'class rank, 3rd year' },
+  rank: { value: '4 / 33', label: 'class rank, 4th year' },
   university: 'B.Sc. Aerospace Engineering, Middle East Technical University, Northern Cyprus Campus',
   location: 'Türkiye · Northern Cyprus',
   availability: 'Open to internships and research projects',
@@ -42,6 +42,16 @@ export const site = {
 
   /* Hero'nun altındaki bilgi şeridi (monospace). */
   telemetry: ['ANSYS Fluent · COMSOL', '30 m/s to Mach 1.5', 'TEKNOFEST Fighter UAV', 'English C1'],
+
+  /* Açılış ekranındaki rakamlar: ilk bakışta görülen başarılar.
+     value içindeki sayı açılışta sayarak yükselir. Hepsi CV'de ve
+     Flow Lab verisinde doğrulanabilir. Kaldırmak için: highlights: [] */
+  highlights: [
+    { value: '0.8%', label: 'lift error vs NASA data' },
+    { value: 'Mach 1.5', label: 'fastest flow simulated' },
+    { value: 'Stage 1', label: 'passed, TEKNOFEST UAV' },
+    { value: '1', label: 'game on Google Play' },
+  ],
 
   /* ---- Tarayıcı sekmesi / SEO ---- */
   meta: {

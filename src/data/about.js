@@ -22,7 +22,7 @@ export const about = {
   intro: [
     {
       tone: 'strong',
-      text: "I'm Derin, a third-year aerospace engineering student at METU Northern Cyprus Campus. I work mostly on high-speed aerodynamics and CFD, and I care a lot about whether a simulation actually agrees with the experiment.",
+      text: "I'm Derin, a fourth-year aerospace engineering student at METU Northern Cyprus Campus. I work mostly on high-speed aerodynamics and CFD, and I care a lot about whether a simulation actually agrees with the experiment.",
       highlight: 'high-speed aerodynamics and CFD',
     },
     {
@@ -73,7 +73,7 @@ export const about = {
 
   /* Küçük istatistik kutuları. Tamamen kaldırmak için: stats: [] */
   stats: [
-    { icon: 'Rocket', value: '3rd Year', label: 'B.Sc. Aerospace Eng.' },
+    { icon: 'Rocket', value: '4th Year', label: 'B.Sc. Aerospace Eng.' },
     { icon: 'Users', value: '10+', label: 'Team projects, 2 as lead' },
     { icon: 'Trophy', value: 'TEKNOFEST', label: 'Stage 1 passed' },
     { icon: 'Globe', value: '4', label: 'Languages' },

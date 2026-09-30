@@ -25,7 +25,7 @@ export const sections = [
     navLabel: 'About',
     label: 'Who I Am',
     title: 'About',
-    subtitle: 'Third-year aerospace engineering student. Most of my time goes into CFD and into checking it against real data.',
+    subtitle: 'Fourth-year aerospace engineering student. Most of my time goes into CFD and into checking it against real data.',
   },
   {
     key: 'flowlab',

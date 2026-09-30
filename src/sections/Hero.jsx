@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowDown, ArrowRight } from 'lucide-react'
 import Icon from '../components/ui/Icon'
 import { TextEffect, Magnetic, Rotator } from '../components/motion'
+import CountUp from '../components/motion/CountUp'
 import { site } from '../config/site.config'
 import { theme } from '../config/theme.config'
 import { dur, motionOff } from '../config/applyTheme'
@@ -70,12 +71,12 @@ export default function Hero({ config }) {
     return <Magnetic key={i}>{el}</Magnetic>
   }
 
-  const nameCls = 'font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tight text-gradient leading-none'
+  const nameCls = 'font-display text-6xl sm:text-7xl md:text-8xl lg:text-[7rem] font-semibold tracking-tight text-gradient leading-none'
 
   return (
     <section
       id={config?.key || 'hero'}
-      className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden pt-24 pb-28"
+      className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden pt-20 pb-20"
     >
       {/* Merkezde çok yumuşak bir aydınlanma */}
       <div
@@ -153,7 +154,7 @@ export default function Hero({ config }) {
         {/* Okul: ODTÜ logosu, tam ad, kampüs kısaltması ve bölüm sıralaması */}
         {site.school && (
           <motion.div
-            className="mb-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2.5"
+            className="mb-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2.5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: dur(0.95), duration: dur(0.7), ease }}
@@ -164,12 +165,15 @@ export default function Hero({ config }) {
                   <img src={site.school.logo} alt="METU (ODTÜ) logo" className="h-full w-full object-contain" />
                 </span>
               )}
-              <span className="text-sm sm:text-base font-medium text-text">{site.school.name}</span>
-              {site.school.short && (
-                <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-accent">
-                  {site.school.short}
-                </span>
-              )}
+              <span className="text-sm sm:text-base font-medium text-text">
+                {site.school.name}
+                {site.school.short && (
+                  <>
+                    <span className="mx-1.5 text-muted" aria-hidden="true">·</span>
+                    {site.school.short}
+                  </>
+                )}
+              </span>
             </span>
             {site.rank && (
               <>
@@ -185,7 +189,7 @@ export default function Hero({ config }) {
         )}
 
         <motion.p
-          className="text-text-dim text-lg sm:text-xl md:text-2xl font-light mb-9 max-w-2xl mx-auto leading-snug"
+          className="text-text-dim text-lg sm:text-xl md:text-2xl font-light mb-8 max-w-2xl mx-auto leading-snug"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: dur(1.05), duration: dur(0.7), ease }}
@@ -214,7 +218,28 @@ export default function Hero({ config }) {
           {site.heroButtons.map(renderButton)}
         </motion.div>
 
-        {site.telemetry?.length > 0 && (
+        {site.highlights?.length > 0 ? (
+          <motion.ul
+            className="mt-9 mx-auto grid max-w-3xl grid-cols-2 sm:grid-cols-4 overflow-hidden rounded-2xl border border-text/10 bg-space/60 backdrop-blur-md shadow-[0_14px_40px_-16px_rgb(0_0_0/0.7)]"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: dur(1.5), duration: dur(0.8), ease }}
+          >
+            {site.highlights.map((h, i) => (
+              <li
+                key={h.label}
+                className={`px-3 py-3.5 sm:py-4 text-center ${i % 2 ? 'border-l border-text/10' : ''} ${
+                  i > 1 ? 'border-t border-text/10 sm:border-t-0' : ''
+                } ${i === 2 ? 'sm:border-l' : ''}`}
+              >
+                <p className="font-display text-xl sm:text-2xl font-semibold leading-none text-gradient">
+                  <CountUp value={h.value} delay={1.7 + i * 0.12} />
+                </p>
+                <p className="mt-1.5 text-[11px] leading-snug text-text-dim">{h.label}</p>
+              </li>
+            ))}
+          </motion.ul>
+        ) : site.telemetry?.length > 0 && (
           <motion.ul
             className="mt-9 mx-auto inline-flex max-w-full flex-wrap items-center justify-center gap-x-4 gap-y-1.5 rounded-2xl sm:rounded-full border border-text/10 bg-space/60 px-4 sm:px-5 py-2.5 font-mono text-[11px] text-text-dim backdrop-blur-md shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)]"
             initial={{ opacity: 0, y: 8 }}
