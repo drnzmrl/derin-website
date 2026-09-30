@@ -10,8 +10,15 @@ export const site = {
   surname: 'İzmirli',
   fullName: 'Derin İzmirli',
   initial: 'D',                       // logo ve footer'daki harf
-  role: 'Aerospace Engineering · METU Northern Cyprus Campus',   // hero'daki üst etiket
-  roleShort: 'Aerospace Engineering · METU NCC',                // telefonda
+  department: 'Aerospace Engineering',  // hero'da ismin üstünde, parlak
+  school: {
+    name: 'Middle East Technical University',
+    short: 'NCC',                            // kampüs kısaltması
+    logo: '/images/shared/metu-logo.png',    // ODTÜ logosu
+  },
+  /* Bölüm sıralaması. CV'de "7 / 35 among 3rd-year students" yazıyor.
+     Güncellenirse sadece burayı değiştir; gizlemek için: rank: null */
+  rank: { value: '7 / 35', label: 'class rank, 3rd year' },
   university: 'B.Sc. Aerospace Engineering, Middle East Technical University, Northern Cyprus Campus',
   location: 'Türkiye · Northern Cyprus',
   availability: 'Open to internships and research projects',
@@ -34,7 +41,7 @@ export const site = {
   status: { label: 'Available', text: 'Internships & research projects' },
 
   /* Hero'nun altındaki bilgi şeridi (monospace). */
-  telemetry: ['3rd year', 'ANSYS Fluent · COMSOL', '30 m/s to Mach 1.5', 'TEKNOFEST Fighter UAV'],
+  telemetry: ['ANSYS Fluent · COMSOL', '30 m/s to Mach 1.5', 'TEKNOFEST Fighter UAV', 'English C1'],
 
   /* ---- Tarayıcı sekmesi / SEO ---- */
   meta: {

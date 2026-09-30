@@ -245,6 +245,25 @@
   transform: translateY(-1px);
 }
 
+/* Hero'daki bölüm adı: sıcak şafak renklerinde, üzerinden yavaşça ışık geçer */
+@keyframes dept-shine { to { background-position: -200% 0; } }
+.dept-shine {
+  background-image: linear-gradient(
+    100deg,
+    rgb(var(--c-warm)) 0%,
+    rgb(var(--c-horizon)) 30%,
+    #fff4e8 45%,
+    rgb(var(--c-horizon)) 60%,
+    rgb(var(--c-warm)) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: dept-shine 5s linear infinite;
+  filter: drop-shadow(0 0 14px rgb(var(--c-warm) / 0.35));
+}
+
 /* "Get it on Google Play": Google renklerinde dönen kenarlık */
 @property --play-angle {
   syntax: '<angle>';
@@ -343,6 +362,7 @@
   .radar-dot::before,
   .radar-dot::after,
   .status-pill,
+  .dept-shine,
   .play-cta,
   .cutout-float,
   .bp-drift,

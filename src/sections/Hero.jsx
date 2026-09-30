@@ -94,7 +94,7 @@ export default function Hero({ config }) {
           <motion.button
             type="button"
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-            className="status-pill group mb-7"
+            className="status-pill group mb-6"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: dur(0.2), duration: dur(0.6) }}
@@ -112,15 +112,21 @@ export default function Hero({ config }) {
           </motion.button>
         )}
 
-        <motion.p
-          className="eyebrow mb-5"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: dur(0.3), duration: dur(0.6) }}
-        >
-          <span className="sm:hidden">{site.roleShort || site.role}</span>
-          <span className="hidden sm:inline">{site.role}</span>
-        </motion.p>
+        {/* Bölüm: ismin üstünde, ışıltılı ve iki yanında ince çizgi */}
+        {site.department && (
+          <motion.div
+            className="mb-4 flex items-center justify-center gap-3 sm:gap-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: dur(0.3), duration: dur(0.7), ease }}
+          >
+            <span className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-warm/80" aria-hidden="true" />
+            <p className="dept-shine font-display text-sm sm:text-base md:text-lg font-semibold uppercase tracking-[0.26em] sm:tracking-[0.34em] pl-[0.26em] sm:pl-[0.34em]">
+              {site.department}
+            </p>
+            <span className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-warm/80" aria-hidden="true" />
+          </motion.div>
+        )}
 
         {/* İsim: harfler aşağıdan fırlayarak gelir */}
         <div className="mb-3">
@@ -134,7 +140,7 @@ export default function Hero({ config }) {
         </div>
         {site.surname && (
           <motion.p
-            className="font-display text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.28em] uppercase text-text/80 mb-7 pl-[0.28em]"
+            className="font-display text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.28em] uppercase text-text/80 mb-6 pl-[0.28em]"
             initial={{ opacity: 0, letterSpacing: '0.6em' }}
             animate={{ opacity: 1, letterSpacing: '0.28em' }}
             transition={{ delay: dur(0.85), duration: dur(1.1), ease }}
@@ -144,8 +150,42 @@ export default function Hero({ config }) {
           </motion.p>
         )}
 
+        {/* Okul: ODTÜ logosu, tam ad, kampüs kısaltması ve bölüm sıralaması */}
+        {site.school && (
+          <motion.div
+            className="mb-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2.5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: dur(0.95), duration: dur(0.7), ease }}
+          >
+            <span className="flex items-center gap-2.5">
+              {site.school.logo && (
+                <span className="grid h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 place-items-center rounded-full bg-white p-[5px] shadow-[0_4px_18px_-4px_rgb(0_0_0/0.5)]">
+                  <img src={site.school.logo} alt="METU (ODTÜ) logo" className="h-full w-full object-contain" />
+                </span>
+              )}
+              <span className="text-sm sm:text-base font-medium text-text">{site.school.name}</span>
+              {site.school.short && (
+                <span className="rounded-md border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-accent">
+                  {site.school.short}
+                </span>
+              )}
+            </span>
+            {site.rank && (
+              <>
+                <span className="hidden sm:block h-5 w-px bg-text/20" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-warm/35 bg-warm/10 px-3 py-1 text-xs text-text">
+                  <Icon name="Trophy" size={12} className="text-warm" />
+                  <span className="font-semibold text-warm">{site.rank.value}</span>
+                  <span className="text-text-dim">{site.rank.label}</span>
+                </span>
+              </>
+            )}
+          </motion.div>
+        )}
+
         <motion.p
-          className="text-text-dim text-lg sm:text-xl md:text-2xl font-light mb-10 max-w-2xl mx-auto leading-snug"
+          className="text-text-dim text-lg sm:text-xl md:text-2xl font-light mb-9 max-w-2xl mx-auto leading-snug"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: dur(1.05), duration: dur(0.7), ease }}
