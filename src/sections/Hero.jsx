@@ -8,6 +8,50 @@ import { theme } from '../config/theme.config'
 import { dur, motionOff } from '../config/applyTheme'
 import { downloadVCard } from '../lib/contact'
 
+/** Açılıştaki başarı kartı: ikon/logo + küçük başlık, büyük değer, açıklama.
+ *  Kısa sayısal değerler açılışta sayarak gelir; uzun metinler olduğu gibi. */
+function HighlightTile({ h, delay }) {
+  const numeric = /\d/.test(h.value) && h.value.length <= 9
+  const external = h.href?.startsWith('http')
+  const go = (e) => {
+    if (h.href?.startsWith('#')) {
+      e.preventDefault()
+      document.getElementById(h.href.slice(1))?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+  return (
+    <a
+      href={h.href}
+      onClick={go}
+      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className="group relative flex h-full flex-col items-start gap-1 px-4 py-3 sm:py-3.5 text-left transition-colors duration-300 hover:bg-text/[0.05]"
+    >
+      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-warm/90">
+        {h.logo ? (
+          <img src={h.logo} alt="" className="h-4 w-auto" />
+        ) : (
+          h.icon && <Icon name={h.icon} size={12} />
+        )}
+        {h.eyebrow}
+        {h.live && <span className="radar-dot ml-1 scale-75" aria-hidden="true" />}
+      </span>
+      <span
+        className={`font-display font-semibold leading-tight text-gradient ${
+          numeric ? 'text-2xl sm:text-[1.7rem]' : 'text-base sm:text-lg'
+        }`}
+      >
+        {numeric ? <CountUp value={h.value} delay={delay} /> : h.value}
+      </span>
+      <span className="text-[11px] leading-snug text-text-dim">{h.label}</span>
+      <Icon
+        name={external ? 'ArrowUpRight' : 'ChevronRight'}
+        size={13}
+        className="absolute right-3 top-3.5 text-muted opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5"
+      />
+    </a>
+  )
+}
+
 export default function Hero({ config }) {
   const still = motionOff()
   const { scrollY } = useScroll()
@@ -220,7 +264,7 @@ export default function Hero({ config }) {
 
         {site.highlights?.length > 0 ? (
           <motion.ul
-            className="mt-9 mx-auto grid max-w-3xl grid-cols-2 sm:grid-cols-4 overflow-hidden rounded-2xl border border-text/10 bg-space/60 backdrop-blur-md shadow-[0_14px_40px_-16px_rgb(0_0_0/0.7)]"
+            className="mt-9 mx-auto grid max-w-4xl grid-cols-2 sm:grid-cols-4 overflow-hidden rounded-2xl border border-text/10 bg-space/60 backdrop-blur-md shadow-[0_14px_40px_-16px_rgb(0_0_0/0.7)]"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: dur(1.5), duration: dur(0.8), ease }}
@@ -228,14 +272,11 @@ export default function Hero({ config }) {
             {site.highlights.map((h, i) => (
               <li
                 key={h.label}
-                className={`px-3 py-3.5 sm:py-4 text-center ${i % 2 ? 'border-l border-text/10' : ''} ${
+                className={`${i % 2 ? 'border-l border-text/10' : ''} ${
                   i > 1 ? 'border-t border-text/10 sm:border-t-0' : ''
                 } ${i === 2 ? 'sm:border-l' : ''}`}
               >
-                <p className="font-display text-xl sm:text-2xl font-semibold leading-none text-gradient">
-                  <CountUp value={h.value} delay={1.7 + i * 0.12} />
-                </p>
-                <p className="mt-1.5 text-[11px] leading-snug text-text-dim">{h.label}</p>
+                <HighlightTile h={h} delay={1.7 + i * 0.12} />
               </li>
             ))}
           </motion.ul>

@@ -46,11 +46,38 @@ export const site = {
   /* Açılış ekranındaki rakamlar: ilk bakışta görülen başarılar.
      value içindeki sayı açılışta sayarak yükselir. Hepsi CV'de ve
      Flow Lab verisinde doğrulanabilir. Kaldırmak için: highlights: [] */
+  /* icon: icons.js içindeki bir isim, ya da logo: public/ altındaki görsel.
+     href: '#bölüm' kaydırır, 'https://...' yeni sekmede açar. */
   highlights: [
-    { value: '0.8%', label: 'lift error vs NASA data' },
-    { value: 'Mach 1.5', label: 'fastest flow simulated' },
-    { value: 'Stage 1', label: 'passed, TEKNOFEST UAV' },
-    { value: '1', label: 'game on Google Play' },
+    {
+      icon: 'Wind',
+      eyebrow: 'CFD validation',
+      value: '0.8%',
+      label: 'lift error vs NASA wind tunnel data',
+      href: '#flowlab',
+    },
+    {
+      icon: 'Zap',
+      eyebrow: 'Supersonic CFD',
+      value: 'Mach 1.5',
+      label: 'wing and airfoil analysis in ANSYS Fluent',
+      href: '#projects',
+    },
+    {
+      logo: '/images/shared/teknofest-logo.png',
+      eyebrow: 'Competition',
+      value: 'Stage 1 passed',
+      label: 'TEKNOFEST Fighter UAV Competition',
+      href: '#projects',
+    },
+    {
+      logo: '/images/shared/google-play-logo.png',
+      eyebrow: 'Published app',
+      value: 'Live on Google Play',
+      label: 'Quadra Rotate, a puzzle game',
+      href: 'https://play.google.com/store/apps/details?id=con.derbar.quadra',
+      live: true,
+    },
   ],
 
   /* ---- Tarayıcı sekmesi / SEO ---- */
