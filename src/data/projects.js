@@ -151,6 +151,7 @@ export const projects = [
   },
   {
     id: 'rocket',
+    track: 'coursework',
     title: 'Rocket Propulsion Simulation',
     category: 'Propulsion',
     year: '2023',
@@ -162,6 +163,7 @@ export const projects = [
   },
   {
     id: 'uav-dynamics',
+    track: 'coursework',
     title: 'UAV Flight Dynamics Modelling',
     category: 'Flight Mechanics',
     year: '2023',
@@ -173,6 +175,7 @@ export const projects = [
   },
   {
     id: 'heat-shield',
+    track: 'coursework',
     title: 'Heat Shield Ablation Study',
     category: 'Thermal / Re-entry',
     year: '2024',
@@ -184,6 +187,7 @@ export const projects = [
   },
   {
     id: 'wind-tunnel',
+    track: 'coursework',
     title: 'Wind Tunnel Test Campaign',
     category: 'Experimental Aerodynamics',
     year: '2023',

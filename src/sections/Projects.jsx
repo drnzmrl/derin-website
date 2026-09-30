@@ -4,7 +4,9 @@ import Section from '../components/layout/Section'
 import Icon from '../components/ui/Icon'
 import Tag from '../components/ui/Tag'
 import Lightbox from '../components/ui/Lightbox'
+import SubHeading from '../components/ui/SubHeading'
 import ProjectCover from '../components/effects/ProjectCovers'
+import Blueprint from '../components/effects/Blueprints'
 import { AnimatedGroup, ShineCard } from '../components/motion'
 import { projects, projectCategoryIcons } from '../data/projects'
 
@@ -180,10 +182,29 @@ function ProjectCard({ project, onOpen }) {
   )
 }
 
+/** Ders ve kendi çalışması: küçük, yatay kart */
+function CompactCard({ project }) {
+  return (
+    <ShineCard className="panel panel-hover h-full flex gap-4 p-4" max={3}>
+      <div className="relative w-28 sm:w-36 flex-shrink-0 aspect-video overflow-hidden rounded-soft border border-text/10 self-start">
+        <Blueprint name={project.cover?.draw} className="absolute inset-0" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <Meta project={project} />
+        <h4 className="mt-1.5 font-display text-sm sm:text-base font-semibold text-text leading-snug">{project.title}</h4>
+        <p className="mt-1.5 text-xs sm:text-sm text-text-dim leading-relaxed">{project.description}</p>
+        {project.outcome && <p className="mt-1.5 text-xs text-text/80 leading-relaxed">{project.outcome}</p>}
+        <p className="mt-2 font-mono text-[10px] text-muted">{project.tools?.join(' · ')}</p>
+      </div>
+    </ShineCard>
+  )
+}
+
 export default function Projects({ config }) {
   const [open, setOpen] = useState(null)
   const featured = projects.filter((p) => p.featured)
-  const rest = projects.filter((p) => !p.featured)
+  const rest = projects.filter((p) => !p.featured && p.track !== 'coursework')
+  const coursework = projects.filter((p) => p.track === 'coursework')
 
   return (
     <Section config={config}>
@@ -198,6 +219,17 @@ export default function Projects({ config }) {
           <ProjectCard key={p.id} project={p} onOpen={() => setOpen(p)} />
         ))}
       </AnimatedGroup>
+
+      {coursework.length > 0 && (
+        <>
+          <SubHeading className="mt-16 mb-6" title="Coursework & self-study" note="Smaller studies from courses and my own reading." />
+          <AnimatedGroup className="grid grid-cols-1 lg:grid-cols-2 gap-4" from="up" stagger={0.06}>
+            {coursework.map((p) => (
+              <CompactCard key={p.id} project={p} />
+            ))}
+          </AnimatedGroup>
+        </>
+      )}
 
       <div className="mt-24 horizon-line" />
 

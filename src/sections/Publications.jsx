@@ -1,6 +1,7 @@
 import Section from '../components/layout/Section'
 import Icon from '../components/ui/Icon'
 import { AnimatedGroup } from '../components/motion'
+import SubHeading from '../components/ui/SubHeading'
 import { publications, publicationTypes } from '../data/publications'
 
 const FALLBACK = { icon: 'BookOpen', tone: 'accent' }
@@ -11,12 +12,12 @@ const TONE = {
   horizon: 'bg-horizon/10 border-horizon/25 text-horizon',
 }
 
-function PublicationRow({ pub }) {
+function PublicationRow({ pub, compact = false }) {
   const cfg = publicationTypes[pub.type] || FALLBACK
   const tone = TONE[cfg.tone] || TONE.accent
 
   return (
-    <div className="group relative panel panel-hover p-6 md:p-7">
+    <div className={`group relative panel panel-hover ${compact ? 'p-5' : 'p-6 md:p-7'}`}>
       {/* Solda, üzerine gelince beliren ince vurgu */}
       <div className="absolute left-0 top-6 bottom-6 w-0.5 rounded-full bg-warm/0 group-hover:bg-warm/50 transition-all duration-300" />
 
@@ -31,13 +32,17 @@ function PublicationRow({ pub }) {
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-display text-base md:text-lg font-semibold text-text leading-snug mb-2 group-hover:text-accent transition-colors duration-300">
+          <h3
+            className={`font-display font-semibold text-text leading-snug mb-2 group-hover:text-accent transition-colors duration-300 ${
+              compact ? 'text-sm md:text-base' : 'text-base md:text-lg'
+            }`}
+          >
             {pub.title}
           </h3>
           <p className="text-xs text-muted mb-3">
             {pub.venue} · {pub.year}
           </p>
-          <p className="text-text-dim text-sm leading-relaxed">{pub.abstract}</p>
+          <p className={`text-text-dim leading-relaxed ${compact ? 'text-xs md:text-sm' : 'text-sm'}`}>{pub.abstract}</p>
         </div>
 
         <div className="flex-shrink-0 flex items-center gap-3 md:flex-col md:items-end">
@@ -72,13 +77,27 @@ function PublicationRow({ pub }) {
 }
 
 export default function Publications({ config }) {
+  const main = publications.filter((p) => p.track !== 'coursework')
+  const coursework = publications.filter((p) => p.track === 'coursework')
+
   return (
     <Section config={config} width="max-w-4xl">
       <AnimatedGroup className="space-y-4" from="left" stagger={0.09}>
-        {publications.map((pub) => (
+        {main.map((pub) => (
           <PublicationRow key={pub.id} pub={pub} />
         ))}
       </AnimatedGroup>
+
+      {coursework.length > 0 && (
+        <>
+          <SubHeading className="mt-14 mb-6" title="Coursework & self-study" note="Reports and articles; copies on request." />
+          <AnimatedGroup className="space-y-3" from="left" stagger={0.06}>
+            {coursework.map((pub) => (
+              <PublicationRow key={pub.id} pub={pub} compact />
+            ))}
+          </AnimatedGroup>
+        </>
+      )}
 
       <div className="mt-24 horizon-line" />
     </Section>

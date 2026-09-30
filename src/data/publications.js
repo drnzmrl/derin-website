@@ -12,6 +12,7 @@ export const publications = [
   },
   {
     id: 1,
+    track: 'coursework',
     title: 'Aerodynamic Performance of Low-Reynolds-Number Airfoils for UAV Applications',
     type: 'Research Paper',
     year: '2024',
@@ -22,6 +23,7 @@ export const publications = [
   },
   {
     id: 2,
+    track: 'coursework',
     title: 'Structural Sizing of a CubeSat Chassis Under Launch Loads',
     type: 'Technical Report',
     year: '2024',
@@ -32,6 +34,7 @@ export const publications = [
   },
   {
     id: 3,
+    track: 'coursework',
     title: 'An Introduction to Solid Rocket Propulsion: From Grain Design to Thrust Curve',
     type: 'Article',
     year: '2023',
@@ -42,6 +45,7 @@ export const publications = [
   },
   {
     id: 4,
+    track: 'coursework',
     title: 'Stability and Control Derivatives of a Tailless UAV Configuration',
     type: 'Technical Report',
     year: '2023',
@@ -52,6 +56,7 @@ export const publications = [
   },
   {
     id: 5,
+    track: 'coursework',
     title: 'Thermal Protection System Design for a Sub-Orbital Re-entry Vehicle',
     type: 'Research Paper',
     year: '2024',

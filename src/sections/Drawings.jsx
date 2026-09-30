@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import Section from '../components/layout/Section'
 import Icon from '../components/ui/Icon'
 import Modal from '../components/ui/Modal'
+import SubHeading from '../components/ui/SubHeading'
 import Blueprint from '../components/effects/Blueprints'
 import { AnimatedGroup, Tilt } from '../components/motion'
 import { drawings, drawingCategoryIcons } from '../data/drawings'
@@ -64,14 +65,28 @@ function Thumbnail({ drawing, onClick }) {
 
 export default function Drawings({ config }) {
   const [selected, setSelected] = useState(null)
+  const cfd = drawings.filter((d) => d.track !== 'coursework')
+  const coursework = drawings.filter((d) => d.track === 'coursework')
 
   return (
     <Section config={config}>
+      <SubHeading className="mb-6" title="From my CFD work" note="Domains, meshes and geometry from the ASE 342 study." />
       <AnimatedGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" from="scale" stagger={0.06}>
-        {drawings.map((drawing) => (
+        {cfd.map((drawing) => (
           <Thumbnail key={drawing.id} drawing={drawing} onClick={setSelected} />
         ))}
       </AnimatedGroup>
+
+      {coursework.length > 0 && (
+        <>
+          <SubHeading className="mt-14 mb-6" title="Coursework & self-study" note="Technical drawings from courses and practice." />
+          <AnimatedGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" from="scale" stagger={0.05}>
+            {coursework.map((drawing) => (
+              <Thumbnail key={drawing.id} drawing={drawing} onClick={setSelected} />
+            ))}
+          </AnimatedGroup>
+        </>
+      )}
 
       <div className="mt-24 horizon-line" />
 
