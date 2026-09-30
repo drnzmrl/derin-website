@@ -12,8 +12,8 @@
   --c-accent: 157 190 255;
   --c-warm: 255 168 107;
   --c-text: 238 242 251;
-  --c-textDim: 174 184 212;
-  --c-muted: 124 136 171;
+  --c-textDim: 184 193 219;
+  --c-muted: 151 162 196;
 
   --sky: linear-gradient(to bottom, #060912 0%, #1B2547 55%, #3D3155 93%, #4A3555 100%);
   --font-display: 'Space Grotesk', system-ui, sans-serif;
@@ -216,6 +216,35 @@
 }
 .radar-dot::after { animation-delay: 1.2s; }
 
+/* Hero durum etiketi: kenarında dolaşan ince ışık hüzmesi */
+@property --beam {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes beam-spin { to { --beam: 360deg; } }
+.status-pill {
+  position: relative;
+  display: inline-flex;
+  border-radius: 9999px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--beam),
+    rgb(var(--c-text) / 0.14) 0deg,
+    rgb(var(--c-text) / 0.14) 240deg,
+    rgb(52 211 153 / 0.9) 295deg,
+    rgb(var(--c-accent)) 325deg,
+    rgb(var(--c-text) / 0.14) 360deg
+  );
+  animation: beam-spin 4.5s linear infinite;
+  box-shadow: 0 10px 30px -14px rgb(52 211 153 / 0.5);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.status-pill:hover {
+  box-shadow: 0 10px 36px -10px rgb(52 211 153 / 0.65);
+  transform: translateY(-1px);
+}
+
 /* "Get it on Google Play": Google renklerinde dönen kenarlık */
 @property --play-angle {
   syntax: '<angle>';
@@ -313,6 +342,7 @@
 @media (prefers-reduced-motion: reduce) {
   .radar-dot::before,
   .radar-dot::after,
+  .status-pill,
   .play-cta,
   .cutout-float,
   .bp-drift,

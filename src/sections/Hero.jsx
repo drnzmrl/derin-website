@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, ArrowRight } from 'lucide-react'
 import Icon from '../components/ui/Icon'
-import { TextEffect, Magnetic } from '../components/motion'
+import { TextEffect, Magnetic, Rotator } from '../components/motion'
 import { site } from '../config/site.config'
 import { theme } from '../config/theme.config'
 import { dur, motionOff } from '../config/applyTheme'
@@ -75,7 +75,7 @@ export default function Hero({ config }) {
   return (
     <section
       id={config?.key || 'hero'}
-      className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden pt-24 pb-28"
     >
       {/* Merkezde çok yumuşak bir aydınlanma */}
       <div
@@ -91,15 +91,25 @@ export default function Hero({ config }) {
         style={{ y: contentY, opacity: contentOpacity }}
       >
         {site.status && (
-          <motion.div
-            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-text/10 bg-space/40 px-3.5 py-1.5 backdrop-blur-md"
+          <motion.button
+            type="button"
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            className="status-pill group mb-7"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: dur(0.2), duration: dur(0.6) }}
           >
-            <span className="radar-dot" aria-hidden="true" />
-            <span className="text-xs font-medium text-text-dim">{site.status}</span>
-          </motion.div>
+            <span className="relative flex items-center gap-2.5 rounded-full bg-space/80 py-1.5 pl-2 pr-3 backdrop-blur-md">
+              <span className="flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-2 py-0.5">
+                <span className="radar-dot" aria-hidden="true" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-200">
+                  {site.status.label}
+                </span>
+              </span>
+              <span className="text-xs font-medium text-text/90">{site.status.text}</span>
+              <ArrowRight size={13} className="text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-text" />
+            </span>
+          </motion.button>
         )}
 
         <motion.p
@@ -108,7 +118,8 @@ export default function Hero({ config }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: dur(0.3), duration: dur(0.6) }}
         >
-          {site.role}
+          <span className="sm:hidden">{site.roleShort || site.role}</span>
+          <span className="hidden sm:inline">{site.role}</span>
         </motion.p>
 
         {/* İsim: harfler aşağıdan fırlayarak gelir */}
@@ -133,28 +144,25 @@ export default function Hero({ config }) {
           </motion.p>
         )}
 
-        {reveal ? (
-          <TextEffect as="p" per="word" preset="lift" delay={1.05} stagger={0.035} className="text-text-dim text-lg md:text-xl font-light mb-3 max-w-2xl mx-auto">
-            {site.tagline}
-          </TextEffect>
-        ) : (
-          <motion.p
-            className="text-text-dim text-lg md:text-xl font-light mb-3 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: dur(0.7), duration: dur(0.7), ease }}
-          >
-            {site.tagline}
-          </motion.p>
-        )}
-
         <motion.p
-          className="text-xs text-muted tracking-wide mb-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: dur(1.2), duration: dur(0.6) }}
+          className="text-text-dim text-lg sm:text-xl md:text-2xl font-light mb-10 max-w-2xl mx-auto leading-snug"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: dur(1.05), duration: dur(0.7), ease }}
         >
-          {site.university}
+          {still ? (
+            site.tagline.still
+          ) : (
+            <>
+              {site.tagline.lead}{' '}
+              <Rotator
+                items={site.tagline.rotate}
+                delay={2.2}
+                base="grid text-center sm:inline-grid sm:text-left sm:align-top"
+                className="text-text font-normal"
+              />
+            </>
+          )}
         </motion.p>
 
         <motion.div
@@ -168,14 +176,14 @@ export default function Hero({ config }) {
 
         {site.telemetry?.length > 0 && (
           <motion.ul
-            className="mt-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 font-mono text-[11px] text-muted"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            className="mt-9 mx-auto inline-flex max-w-full flex-wrap items-center justify-center gap-x-4 gap-y-1.5 rounded-2xl sm:rounded-full border border-text/10 bg-space/60 px-4 sm:px-5 py-2.5 font-mono text-[11px] text-text-dim backdrop-blur-md shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)]"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: dur(1.6), duration: dur(0.8) }}
           >
             {site.telemetry.map((t, i) => (
-              <li key={t} className="flex items-center gap-3">
-                {i > 0 && <span className="hidden sm:block h-3 w-px bg-text/15" aria-hidden="true" />}
+              <li key={t} className="flex items-center gap-4">
+                {i > 0 && <span className="hidden sm:block h-1 w-1 rounded-full bg-warm/70" aria-hidden="true" />}
                 <span>{t}</span>
               </li>
             ))}

@@ -202,7 +202,9 @@ export default function Projects({ config }) {
       <div className="mt-24 horizon-line" />
 
       <AnimatePresence>
-        {open && <Lightbox title={open.title} items={open.gallery} onClose={() => setOpen(null)} />}
+        {open && (
+          <Lightbox title={open.title} items={open.gallery} credit={open.figureCredit} onClose={() => setOpen(null)} />
+        )}
       </AnimatePresence>
     </Section>
   )

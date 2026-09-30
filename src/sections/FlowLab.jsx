@@ -387,13 +387,17 @@ function LiftChart({ foil, runIdx, aoaIdx }) {
         </g>
       ))}
       <text x={Wd - pad.r} y={Ht - 3} textAnchor="end" style={label}>α</text>
-      <text x={4} y={pad.t + 8} style={label}>CL</text>
+      <text x={4} y={pad.t + 8} style={label}>
+        C<tspan dy="2" fontSize="7">L</tspan>
+      </text>
 
-      {/* NASA deneyi */}
-      <path d={line(foil.nasa.aoa, foil.nasa.CL)} fill="none" strokeWidth="1.2" style={{ stroke: c('text', 0.45) }} />
-      {foil.nasa.aoa.map((a, i) => (
-        <circle key={a} cx={X(a)} cy={Y(foil.nasa.CL[i])} r="2" strokeWidth="1" style={{ fill: c('space'), stroke: c('text', 0.6) }} />
-      ))}
+      {/* NASA deneyi (düşük hız); transonik/süpersonikte soluk */}
+      <g style={{ opacity: run.mach < 0.7 ? 1 : 0.35 }}>
+        <path d={line(foil.nasa.aoa, foil.nasa.CL)} fill="none" strokeWidth="1.2" style={{ stroke: c('text', 0.45) }} />
+        {foil.nasa.aoa.map((a, i) => (
+          <circle key={a} cx={X(a)} cy={Y(foil.nasa.CL[i])} r="2" strokeWidth="1" style={{ fill: c('space'), stroke: c('text', 0.6) }} />
+        ))}
+      </g>
 
       {/* diğer Mach sayıları soluk */}
       {foil.runs.map((r, i) =>
@@ -538,8 +542,9 @@ export default function FlowLab({ config }) {
         <div>
           <FlowCanvas foilKey={foilKey} runIdx={runIdx} aoa={aoa} />
           <p className="mt-3 text-[11px] leading-relaxed text-muted">
-            The animation is illustrative: an incompressible panel solution with a Prandtl–Glauert correction, and shocks
-            sketched from the Mach angle. The numbers are the ones my ANSYS Fluent runs produced (k-ω SST).
+            The animation is illustrative: an inviscid panel solution with a Prandtl–Glauert correction, and shocks sketched
+            from the Mach angle. The coefficients are from my steady 2D RANS runs in ANSYS Fluent (k-ω SST); the NASA
+            reference data are low-speed measurements at Re = 6 × 10⁶.
           </p>
         </div>
 
@@ -564,8 +569,8 @@ export default function FlowLab({ config }) {
           />
 
           <div className="grid grid-cols-3 gap-2">
-            <Readout label="CL" value={CL} accent />
-            <Readout label="CD" value={CD} digits={4} />
+            <Readout label={<>C<sub>L</sub></>} value={CL} accent />
+            <Readout label={<>C<sub>D</sub></>} value={CD} digits={4} />
             <Readout label="L / D" value={LD} digits={1} />
           </div>
 
@@ -584,7 +589,7 @@ export default function FlowLab({ config }) {
             <LiftChart foil={foil} runIdx={runIdx} aoaIdx={aoaIdx} />
             <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] text-muted px-1">
               <span className="flex items-center gap-1.5"><span className="h-2 w-2 bg-accent" /> CFD, M {run.mach}</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full border border-text/60" /> NASA experiment</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full border border-text/60" /> NASA experiment, low speed</span>
               {run.mach > 1 && (
                 <span className="flex items-center gap-1.5"><span className="h-px w-3 border-t border-dashed border-warm" /> Ackeret theory</span>
               )}

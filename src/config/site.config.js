@@ -10,19 +10,31 @@ export const site = {
   surname: 'İzmirli',
   fullName: 'Derin İzmirli',
   initial: 'D',                       // logo ve footer'daki harf
-  role: 'Aerospace Engineering · METU NCC',   // hero'daki üst etiket
-  tagline: 'I study how air behaves around wings and bodies, from 30 m/s to Mach 1.5.',
+  role: 'Aerospace Engineering · METU Northern Cyprus Campus',   // hero'daki üst etiket
+  roleShort: 'Aerospace Engineering · METU NCC',                // telefonda
   university: 'B.Sc. Aerospace Engineering, Middle East Technical University, Northern Cyprus Campus',
   location: 'Türkiye · Northern Cyprus',
   availability: 'Open to internships and research projects',
 
-  /* Hero'daki küçük durum etiketi (yanında radar noktası atar).
-     Gizlemek için: null */
-  status: 'Open to internships & research',
+  /* Hero cümlesi: sabit başlangıç + sırayla değişen ifadeler.
+     Hareket azaltılmışsa taglineStill gösterilir. */
+  tagline: {
+    lead: 'I simulate',
+    rotate: [
+      'shock waves at Mach 1.5.',
+      'wing-tip vortices.',
+      'the wake behind a car body.',
+      'lift, then check it against NASA data.',
+    ],
+    still: 'I simulate shock waves, wing-tip vortices and wakes, then check them against experiment.',
+  },
 
-  /* Hero'nun altındaki ince bilgi şeridi (monospace).
-     Her satır bir parça; aralarına ayraç konur. */
-  telemetry: ['CFD · ANSYS Fluent · COMSOL', 'TEKNOFEST Fighter UAV', '3rd year', 'TR · EN C1'],
+  /* Hero'daki durum etiketi. Tıklanınca İletişim'e kaydırır.
+     Gizlemek için: status: null */
+  status: { label: 'Available', text: 'Internships & research projects' },
+
+  /* Hero'nun altındaki bilgi şeridi (monospace). */
+  telemetry: ['3rd year', 'ANSYS Fluent · COMSOL', '30 m/s to Mach 1.5', 'TEKNOFEST Fighter UAV'],
 
   /* ---- Tarayıcı sekmesi / SEO ---- */
   meta: {

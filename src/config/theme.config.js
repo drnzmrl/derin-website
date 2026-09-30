@@ -19,8 +19,8 @@ export const theme = {
     accent:     '#9DBEFF', // ana vurgu (yumuşak gökyüzü mavisi)
     warm:       '#FFA86B', // ikincil vurgu (roket egzozu)
     text:       '#EEF2FB', // ana metin
-    textDim:    '#AEB8D4', // ikincil metin
-    muted:      '#7C88AB', // en soluk metin
+    textDim:    '#B8C1DB', // ikincil metin
+    muted:      '#97A2C4', // en soluk metin (koyu mor zeminde okunur kalsın diye açık)
   },
 
   /* ---- Sayfa boyunca dikey gökyüzü gradyanı ----

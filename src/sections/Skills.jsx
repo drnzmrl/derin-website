@@ -2,7 +2,7 @@ import Section from '../components/layout/Section'
 import Icon from '../components/ui/Icon'
 import ToolLoop from '../components/effects/ToolLoop'
 import { AnimatedGroup } from '../components/motion'
-import { skillGroups, toolbelt } from '../data/skills'
+import { skillGroups, toolbelt, evidence } from '../data/skills'
 
 function SkillGroup({ group }) {
   return (
@@ -15,14 +15,22 @@ function SkillGroup({ group }) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {group.skills.map((skill) => (
-          <span
-            key={skill}
-            className="px-3 py-1.5 rounded-full bg-text/5 border border-text/10 text-text-dim text-xs hover:border-warm/35 hover:text-warm transition-all duration-300 cursor-default"
-          >
-            {skill}
-          </span>
-        ))}
+        {group.skills.map((skill) => {
+          const used = evidence.has(skill)
+          return (
+            <span
+              key={skill}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all duration-300 cursor-default ${
+                used
+                  ? 'bg-accent/10 border-accent/30 text-text hover:border-warm/50'
+                  : 'bg-text/5 border-text/10 text-text-dim hover:border-warm/35 hover:text-warm'
+              }`}
+            >
+              {used && <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />}
+              {skill}
+            </span>
+          )
+        })}
       </div>
     </div>
   )
@@ -32,10 +40,15 @@ export default function Skills({ config }) {
   return (
     <Section config={config}>
       {toolbelt?.length > 0 && (
-        <div className="-mx-6 mb-12">
+        <div className="-mx-6 mb-10">
           <ToolLoop items={toolbelt} />
         </div>
       )}
+
+      <p className="mb-6 flex items-center gap-2 text-xs text-text-dim">
+        <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
+        Highlighted skills are the ones behind the projects on this page.
+      </p>
 
       <AnimatedGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" stagger={0.09}>
         {skillGroups.map((group) => (

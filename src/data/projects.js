@@ -30,17 +30,23 @@ export const projects = [
     category: 'CFD / Aerodynamics',
     year: '2026',
     credit: 'with Ufuk Karacan · ASE 342 Aerodynamics II',
+    figureCredit: 'Figures: D. İzmirli & U. Karacan, ASE 342 report, METU NCC, 2026',
     description:
-      'Straight, swept and tapered NACA 0012 wings at 30 m/s, Mach 0.85 and Mach 1.5, then the Ahmed body at nine slant angles from 0° to 80°, with and without an undertray diffuser. Mesh independence, y+ ≈ 1 inflation layers and transient runs for the wake.',
+      'Straight, swept and tapered NACA 0012 wings at 30 m/s, Mach 0.85 and Mach 1.5, then the Ahmed body at nine slant angles from 0° to 80°, with and without an undertray diffuser. Mesh independence study, inflation layers sized for y⁺ ≈ 1, and transient runs to resolve the wake.',
     outcome:
-      'The straight-wing check matched reference drag within 0.22%. At Mach 1.5 the oblique shocks and wing-tip vortices show up clearly. On the Ahmed body, the diffuser pushed the lift coefficient from -0.150 to -0.643, and with the diffuser the 10° slant was the most efficient case.',
+      'The straight wing at 0° and 30 m/s matched reference drag within 0.22%. At 8° in subsonic flow the tapered wing reached L/D ≈ 17 against ≈ 15 for the swept wing. On the Ahmed body at 30° we got Cd = 0.178 against 0.260 measured by Ahmed et al. (1984); we traced most of the gap to our moving ground versus their fixed floor. The undertray diffuser moved CL from -0.150 to -0.643 at 0° slant.',
     tools: ['ANSYS Fluent', 'k-ω SST', 'MATLAB'],
     metrics: [
-      { value: '0.22%', label: 'CD error, validation' },
-      { value: 'M 1.5', label: 'highest Mach' },
+      { value: '0.22%', label: 'CD error, 0° validation' },
+      { value: 'L/D 17', label: 'tapered wing, 8°' },
       { value: '9', label: 'slant angles' },
     ],
-    cover: { kind: 'cutout', src: W + 'ahmed-vortex-30.webp', backdrop: W + 'wing-m15-mach.webp' },
+    cover: {
+      kind: 'cutout',
+      src: W + 'wing-tapered-surface.webp',
+      backdrop: W + 'wing-m15-mach.webp',
+      caption: 'surface static pressure · tapered wing',
+    },
     gallery: [
       { src: W + 'wing-m15-mach.webp', caption: 'Mach number around the swept wing at M = 1.5, α = 4°. Oblique shocks leave the leading and trailing edges.' },
       { src: W + 'wing-tapered-vortex.webp', caption: 'Streamlines and wing-tip vortices on the tapered wing at M = 1.5.', cutout: true },
@@ -62,14 +68,16 @@ export const projects = [
     title: 'NACA 0012 and NACA 2415 Airfoil Analysis',
     category: 'CFD / Aerodynamics',
     year: '2026',
+    figureCredit: 'Figures: D. İzmirli, 2026',
     description:
-      'Simulated 2D airfoils across subsonic, transonic and supersonic regimes in ANSYS Fluent. Investigated shock wave behaviour, mesh independence and y+.',
+      'Steady 2D RANS simulations (k-ω SST) of both airfoils at 0°, 8° and 16° across subsonic, transonic and supersonic regimes in ANSYS Fluent, with a mesh independence study and y⁺ control near the wall.',
     outcome:
-      'Lift in the subsonic case stayed within 5% of NASA experimental data (Ladson, 1988). At Mach 1.2 I compared the results with linearized supersonic theory and explained where and why it breaks down.',
-    tools: ['ANSYS Fluent', 'MATLAB', 'Python'],
+      'Subsonic lift stayed within 5% of NASA wind tunnel data: 0.8% off at 8° and 1.8% at 16° for the NACA 0012 (Ladson, 1988). The one outlier is the NACA 2415 at 16°, where the experiment has already stalled and the steady solution has not. At Mach 1.2, linearized theory overpredicts lift by 20 to 34%, which fits a thick, cambered section.',
+    tools: ['ANSYS Fluent', 'k-ω SST', 'MATLAB'],
     metrics: [
-      { value: '<5%', label: 'lift error vs NASA' },
+      { value: '0.8%', label: 'CL error at 8°, NACA 0012' },
       { value: '4', label: 'Mach numbers' },
+      { value: '24', label: 'Fluent cases' },
     ],
     cover: { kind: 'image', src: W + 'naca0012-m15-pressure.webp' },
     links: [{ label: 'Try it in the Flow Lab', href: '#flowlab', icon: 'Wind' }],
@@ -101,7 +109,8 @@ export const projects = [
       src: S + 'uav-stock.webp',
       box: { left: 38.5, top: 24, width: 17.5, height: 23 },
       badge: S + 'teknofest-logo.png',
-      credit: 'Photo: Unsplash',
+      credit: 'Stock photo · Unsplash',
+      label: 'DETECTION OVERLAY · ILLUSTRATIVE',
     },
   },
   {

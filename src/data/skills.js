@@ -16,6 +16,27 @@ export const toolbelt = [
   'CATIA V5',
 ]
 
+/* Bu sayfadaki projelerde fiilen kullanılanlar. Skills bölümünde
+   küçük bir noktayla işaretlenir; kanıtı olan beceri ayrı görünsün. */
+export const evidence = new Set([
+  'Aerodynamics & CFD',
+  'Compressible Flow',
+  'Mesh Independence & y⁺',
+  'ANSYS Fluent',
+  'COMSOL Multiphysics',
+  'MATLAB',
+  'Python',
+  'YOLO (object detection)',
+  'React',
+  'JavaScript',
+  'Validation against experimental data',
+  'Technical Report Writing',
+  'Teamwork',
+  'Team lead on 2 projects',
+  'Turkish · Native',
+  'English · IELTS C1',
+])
+
 export const skillGroups = [
   {
     category: 'Aerospace & Engineering',
@@ -23,7 +44,7 @@ export const skillGroups = [
     skills: [
       'Aerodynamics & CFD',
       'Compressible Flow',
-      'Mesh Independence & y+',
+      'Mesh Independence & y⁺',
       'Structural Analysis (FEA)',
       'Flight Mechanics',
       'Orbital Mechanics',

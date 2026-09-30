@@ -13,7 +13,7 @@ import { dur } from '../../config/applyTheme'
  * cutout → arka planı saydam görsel (koyu zeminde gösterilir)
  * plot   → beyaz zeminli grafik (kağıt gibi çerçevelenir)
  */
-export default function Lightbox({ title, items, start = 0, onClose }) {
+export default function Lightbox({ title, items, credit, start = 0, onClose }) {
   const [i, setI] = useState(start)
   const [dir, setDir] = useState(0)
   const n = items.length
@@ -60,6 +60,7 @@ export default function Lightbox({ title, items, start = 0, onClose }) {
           <p className="eyebrow truncate">{title}</p>
           <p className="font-mono text-[11px] text-muted mt-1">
             {i + 1} / {n}
+            {credit && <span className="ml-3 text-muted/90">{credit}</span>}
           </p>
         </div>
         <button

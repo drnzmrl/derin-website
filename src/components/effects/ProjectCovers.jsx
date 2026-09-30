@@ -50,6 +50,9 @@ function CutoutCover({ cover, alt }) {
         loading="lazy"
         className="cutout-float absolute inset-[8%] w-[84%] h-[84%] object-contain drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] transition-transform duration-700 group-hover:scale-[1.05]"
       />
+      {cover.caption && (
+        <span className="absolute bottom-4 right-4 z-10 font-mono text-[10px] text-text/60">{cover.caption}</span>
+      )}
     </>
   )
 }
@@ -85,8 +88,8 @@ function DetectionCover({ cover, alt }) {
           <span className="absolute left-1/2 top-0 h-full w-px bg-accent" />
           <span className="absolute left-0 top-1/2 h-px w-full bg-accent" />
         </div>
-        <p className="absolute bottom-3 left-4 font-mono text-[10px] tracking-wider text-accent/70">
-          CAM-01 · OBJECT DETECTION
+        <p className="absolute bottom-3 left-4 font-mono text-[10px] tracking-wider text-accent/80">
+          {cover.label || 'OBJECT DETECTION'}
         </p>
       </div>
       {cover.badge && (
@@ -95,7 +98,7 @@ function DetectionCover({ cover, alt }) {
         </span>
       )}
       {cover.credit && (
-        <span className="absolute top-3 right-3 z-10 font-mono text-[9px] text-text/50">{cover.credit}</span>
+        <span className="absolute top-3 right-3 z-10 rounded bg-space/60 px-1.5 py-0.5 font-mono text-[9px] text-text/70">{cover.credit}</span>
       )}
     </>
   )

@@ -65,57 +65,108 @@ export function buildSatellite() {
   return g
 }
 
-/** İki kademeli roket */
+/** Von Kármán burun profili (LD-Haack, C = 0): taban yarıçapı R, boy L */
+function vonKarman(R, L, n = 24) {
+  const pts = []
+  for (let i = 0; i <= n; i++) {
+    const x = (i / n) * L // tabandan uca
+    const th = Math.acos(1 - (2 * (L - x)) / L)
+    const r = (R / Math.sqrt(Math.PI)) * Math.sqrt(th - Math.sin(2 * th) / 2)
+    pts.push(new THREE.Vector2(Math.max(r, 0.0005), x))
+  }
+  return pts
+}
+
+/**
+ * İki kademeli fırlatma aracı. Oranlar gerçek araçlara yakın:
+ * ~0.3 çap, ~4.2 boy (incelik oranı ~14), gövdeden biraz geniş faring,
+ * koyu ara kademe, ızgara kanatçıklar, katlanmış iniş bacakları ve
+ * 1 + 8 dizilimli dokuz motor çanı. Boya beyaz ve mat, krom değil.
+ */
 export function buildRocket() {
   const g = new THREE.Group()
+  const R = 0.15
+  const paint = metal('#EEF1F6', 0.12, 0.55)
+  const dark = metal('#1C2030', 0.35, 0.6)
+  const steel = metal('#6A7080', 0.8, 0.35)
 
-  const stage1 = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.38, 0.38, 1.7, 20),
-    metal('#EDEFF6', 0.35, 0.42)
-  )
-  stage1.position.y = -0.7
+  // 1. kademe
+  const stage1 = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 2.2, 28), paint)
+  stage1.position.y = -0.9
   g.add(stage1)
 
-  const stage2 = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.3, 0.38, 0.75, 20),
-    metal('#DDE2EE', 0.4, 0.4)
-  )
-  stage2.position.y = 0.5
+  // ince sıcak renkli bant (tek renk vurgusu)
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.005, R * 1.005, 0.05, 28), metal('#E0703A', 0.2, 0.5))
+  band.position.y = -0.1
+  g.add(band)
+
+  // ara kademe
+  const inter = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 0.26, 28), dark)
+  inter.position.y = 0.33
+  g.add(inter)
+
+  // 2. kademe
+  const stage2 = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 0.6, 28), paint)
+  stage2.position.y = 0.76
   g.add(stage2)
 
-  const nose = new THREE.Mesh(
-    new THREE.ConeGeometry(0.3, 0.72, 20),
-    metal('#F5F7FC', 0.3, 0.38)
-  )
-  nose.position.y = 1.15
+  // faring: kısa geçiş konisi, silindir ve von Kármán burun
+  const RF = 0.185
+  const boat = new THREE.Mesh(new THREE.CylinderGeometry(RF, R, 0.08, 28), paint)
+  boat.position.y = 1.1
+  g.add(boat)
+  const fairing = new THREE.Mesh(new THREE.CylinderGeometry(RF, RF, 0.42, 28), paint)
+  fairing.position.y = 1.35
+  g.add(fairing)
+  const nose = new THREE.Mesh(new THREE.LatheGeometry(vonKarman(RF, 0.62), 28), paint)
+  nose.position.y = 1.56
   g.add(nose)
 
-  for (let i = 0; i < 3; i++) {
-    const a = (i / 3) * Math.PI * 2
-    const fin = new THREE.Mesh(
-      new THREE.BoxGeometry(0.22, 0.5, 0.05),
-      metal('#C2452F', 0.3, 0.5)
-    )
-    fin.position.set(Math.cos(a) * 0.45, -1.35, Math.sin(a) * 0.45)
-    fin.rotation.y = -a
+  // ızgara kanatçıklar (1. kademenin tepesinde)
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + Math.PI / 4
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.1, 0.018), steel)
+    fin.position.set(Math.cos(a) * (R + 0.06), 0.1, Math.sin(a) * (R + 0.06))
+    fin.rotation.y = -a + Math.PI / 2
     g.add(fin)
   }
 
-  const nozzle = new THREE.Mesh(
-    new THREE.ConeGeometry(0.3, 0.35, 16, 1, true),
-    metal('#5A5F6E', 0.85, 0.35, { side: THREE.DoubleSide })
-  )
-  nozzle.position.y = -1.68
-  g.add(nozzle)
+  // katlanmış iniş bacakları
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + Math.PI / 4
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.62, 0.02), dark)
+    leg.position.set(Math.cos(a) * (R + 0.008), -1.62, Math.sin(a) * (R + 0.008))
+    leg.rotation.y = -a + Math.PI / 2
+    g.add(leg)
+  }
+
+  // motor bölmesi ve dokuz çan
+  const octa = new THREE.Mesh(new THREE.CylinderGeometry(R, R * 0.92, 0.06, 28), dark)
+  octa.position.y = -2.03
+  g.add(octa)
+  const bellProfile = []
+  for (let i = 0; i <= 8; i++) {
+    const k = i / 8
+    bellProfile.push(new THREE.Vector2(0.022 + 0.026 * Math.sqrt(k), -k * 0.1))
+  }
+  const bellGeo = new THREE.LatheGeometry(bellProfile, 14)
+  const bellMat = metal('#4A4F5C', 0.85, 0.3, { side: THREE.DoubleSide })
+  const spots = [[0, 0]]
+  for (let i = 0; i < 8; i++) spots.push([Math.cos((i / 8) * Math.PI * 2) * 0.1, Math.sin((i / 8) * Math.PI * 2) * 0.1])
+  for (const [x, z] of spots) {
+    const bell = new THREE.Mesh(bellGeo, bellMat)
+    bell.position.set(x, -2.06, z)
+    g.add(bell)
+  }
 
   // ---- Egzoz alevi ----
   // İki iç içe koni: içte sıcak beyaz-sarı çekirdek,
   // dışta yumuşak turuncu hale. Toplamalı karışım ile parlar.
   const flame = new THREE.Group()
-  flame.position.y = -1.9
+  flame.position.y = -2.2
 
   const core = new THREE.Mesh(
-    new THREE.ConeGeometry(0.2, 1.1, 14, 1, true),
+    new THREE.ConeGeometry(0.13, 1.1, 14, 1, true),
     new THREE.MeshBasicMaterial({
       color: '#FFE9C4',
       transparent: true,
@@ -130,7 +181,7 @@ export function buildRocket() {
   flame.add(core)
 
   const halo = new THREE.Mesh(
-    new THREE.ConeGeometry(0.42, 2.1, 16, 1, true),
+    new THREE.ConeGeometry(0.26, 2.1, 16, 1, true),
     new THREE.MeshBasicMaterial({
       color: '#FF8A3C',
       transparent: true,

@@ -255,7 +255,9 @@ export default function SpaceScene() {
 
       if (rocket) {
         const side = cfg.rocketSide === 'right' ? 1 : -1
-        rocket.position.x = lerp(side * 4.6, side * 8.5, k) + Math.sin(t * 0.25) * 0.12
+        // Hero metninin üstüne binmesin diye isimden biraz uzakta başlar
+        const narrow = window.innerWidth < 900
+        rocket.position.x = lerp(side * (narrow ? 4.6 : 5.6), side * 8.5, k) + Math.sin(t * 0.25) * 0.12
         rocket.position.y = lerp(0.2, -6.5, k)
         rocket.position.z = lerp(-9, -26, k)
         rocket.scale.setScalar(lerp(0.9, 0.55, k))
