@@ -45,14 +45,13 @@ npm run build
 
 ## Yayına alma
 
-Depo Vercel için hazır — yapılandırma [vercel.json](vercel.json)
-içinde: çerçeve, derleme komutu ve katalog/doku dosyaları için
-önbellek başlıkları.
+Site Vercel'de yayında: https://derin-website-beige.vercel.app
+Yapılandırma [vercel.json](vercel.json) içinde: çerçeve, derleme komutu
+ve katalog/doku dosyaları için önbellek başlıkları.
 
-Bağlamak için: [vercel.com/new](https://vercel.com/new) → GitHub ile
-giriş → bu depoyu içe aktar. Vite kendiliğinden tanınır, ayar
-değiştirmen gerekmez; private repoyla da çalışır. Bağladıktan sonra
-`main` dalına her push otomatik yayına gider.
+`main` dalına her push otomatik yayına gider. Depo public; Vercel'in
+ücretsiz planı private depoda başkasının push'unu yayınlamıyor, bu
+yüzden private yapılırsa sadece Derin'in kendi commit'leri yayına çıkar.
 
 ---
 
