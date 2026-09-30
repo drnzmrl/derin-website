@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import Icon from './Icon'
 import Tag from './Tag'
+import Blueprint from '../effects/Blueprints'
 import { theme } from '../../config/theme.config'
 import { dur } from '../../config/applyTheme'
 
@@ -19,9 +21,10 @@ export default function Modal({ item, onClose }) {
     }
   }, [onClose])
 
-  return (
+  // body'ye taşınır: main'in katman bağlamı menünün altında bırakmasın
+  return createPortal(
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -42,26 +45,24 @@ export default function Modal({ item, onClose }) {
         transition={{ duration: dur(0.35), ease: theme.motion.ease }}
       >
         <div
-          className="w-full aspect-video flex items-center justify-center relative overflow-hidden"
-          style={{
-            background:
-              'radial-gradient(ellipse at 50% 115%, rgb(var(--c-warm) / 0.14) 0%, transparent 62%), radial-gradient(ellipse at 25% -10%, rgb(var(--c-accent) / 0.12) 0%, transparent 58%)',
-          }}
+          className={`w-full aspect-video flex items-center justify-center relative overflow-hidden ${
+            item.image && item.light ? 'bg-[#f4f6fb]' : ''
+          }`}
+          style={
+            item.image && item.light
+              ? undefined
+              : {
+                  background:
+                    'radial-gradient(ellipse at 50% 115%, rgb(var(--c-warm) / 0.14) 0%, transparent 62%), radial-gradient(ellipse at 25% -10%, rgb(var(--c-accent) / 0.12) 0%, transparent 58%)',
+                }
+          }
         >
           {item.image ? (
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-full object-cover"
-            />
+            <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
+          ) : item.blueprint ? (
+            <Blueprint name={item.blueprint} className="absolute inset-0" />
           ) : (
-            <div className="flex flex-col items-center gap-3 opacity-55 px-6 text-center">
-              <Icon name="PenTool" size={30} className="text-accent" />
-              <p className="text-[11px] text-muted">
-                Görseli <span className="text-text-dim">public/images/</span> içine koy,
-                yolunu <span className="text-text-dim">src/data/drawings.js → image</span> alanına yaz
-              </p>
-            </div>
+            <Icon name="PenTool" size={30} className="text-accent/50" />
           )}
         </div>
 
@@ -75,7 +76,7 @@ export default function Modal({ item, onClose }) {
             </div>
             <button
               onClick={onClose}
-              aria-label="Kapat"
+              aria-label="Close"
               className="flex-shrink-0 p-1.5 rounded-soft text-muted hover:text-text hover:bg-text/10 transition-colors"
             >
               <X size={18} />
@@ -95,6 +96,7 @@ export default function Modal({ item, onClose }) {
           )}
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }

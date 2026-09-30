@@ -8,6 +8,7 @@ import Starfield from './components/canvas/Starfield'
 import HorizonGlow from './components/canvas/HorizonGlow'
 import CursorCraft from './components/canvas/CursorCraft'
 import ScrollProgress from './components/ui/ScrollProgress'
+import BackToTop from './components/ui/BackToTop'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 
@@ -53,6 +54,7 @@ export default function App() {
       </main>
 
       <Footer />
+      {site.features.backToTop && <BackToTop />}
     </div>
   )
 }

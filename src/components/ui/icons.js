@@ -54,6 +54,23 @@ import {
   Thermometer,
   Wind,
   Zap,
+  // Yeni tasarımda eklenenler
+  ArrowUp,
+  Award,
+  Box,
+  Check,
+  Copy,
+  Crosshair,
+  Grid3x3,
+  Images,
+  MapPin,
+  Mic,
+  Music,
+  QrCode,
+  Share2,
+  Trophy,
+  UserPlus,
+  Users,
 } from 'lucide-react'
 
 export const icons = {
@@ -91,6 +108,22 @@ export const icons = {
   Thermometer,
   Wind,
   Zap,
+  ArrowUp,
+  Award,
+  Box,
+  Check,
+  Copy,
+  Crosshair,
+  Grid3x3,
+  Images,
+  MapPin,
+  Mic,
+  Music,
+  QrCode,
+  Share2,
+  Trophy,
+  UserPlus,
+  Users,
 }
 
 export default icons

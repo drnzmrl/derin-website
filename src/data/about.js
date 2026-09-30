@@ -7,12 +7,14 @@
 
 export const about = {
   /* Fotoğraf: public/images/ içine koy, yolunu buraya yaz.
-     null bırakırsan baş harfli yer tutucu görünür.          */
-  photo: null, // örn: '/images/derin.jpg'
-  photoAlt: 'Derin',
+     Arka planı temizlenmiş (PNG/WebP) bir portre en iyi sonucu verir;
+     holografik, imlece göre eğilen kartta gösterilir.
+     null bırakırsan görev arması rozeti görünür.            */
+  photo: null, // örn: '/images/derin.webp'
+  photoAlt: 'Derin İzmirli',
 
-  /* Fotoğrafın köşesindeki küçük rozet. Gizlemek için: null */
-  badge: { label: 'Based in', value: 'Turkey 🇹🇷' },
+  /* Fotoğrafın / rozetin köşesindeki küçük etiket. Gizlemek için: null */
+  badge: { label: 'Based at', value: 'METU NCC' },
 
   /* Giriş paragrafları.
      tone: 'strong' → ana metin, 'soft' → soluk, 'accent' → vurgulu
@@ -20,21 +22,25 @@ export const about = {
   intro: [
     {
       tone: 'strong',
-      text: 'I am Derin — a third-year aerospace engineering student focused on high-speed aerodynamics, CFD, and data-driven problem-solving. I like turning complex flow physics into clear, actionable results.',
-      highlight: 'high-speed aerodynamics, CFD, and data-driven problem-solving',
+      text: "I'm Derin, a third-year aerospace engineering student at METU Northern Cyprus Campus. I work mostly on high-speed aerodynamics and CFD, and I care a lot about whether a simulation actually agrees with the experiment.",
+      highlight: 'high-speed aerodynamics and CFD',
     },
     {
       tone: 'soft',
-      text: 'I have run CFD simulations on airfoils and aerodynamic bodies across subsonic, transonic, and supersonic regimes — validating against NASA data with under 5% error. I also build software on the side, from a published mobile game to student platforms.',
+      text: 'This year I modelled the NACA 0012 and 2415 airfoils from Mach 0.13 up to Mach 1.5. In the subsonic validation case my lift results stayed within 5% of NASA wind tunnel data. With a teammate I also took a 3D wing through subsonic, transonic and supersonic flow and ran nine slant angles of the Ahmed body.',
+    },
+    {
+      tone: 'soft',
+      text: 'On the TEKNOFEST Fighter UAV team I train the YOLO detector that finds the target aircraft. I also like building software: Quadra Rotate, a puzzle game I helped build, is live on Google Play.',
     },
     {
       tone: 'accent',
-      text: 'Open to internships and research opportunities in aerospace engineering.',
+      text: 'Looking for internships and research projects in aerodynamics, CFD and space systems.',
     },
   ],
 
   /* "Şu an üzerinde çalıştıklarım" kartları.
-     icon: https://lucide.dev/icons adresindeki bir isim         */
+     icon: src/components/ui/icons.js içindeki bir isim         */
   currentWork: {
     title: 'Currently Working On',
     items: [
@@ -42,24 +48,24 @@ export const about = {
         icon: 'Zap',
         title: 'High-Speed Aerodynamics',
         items: [
-          '3D wing & Ahmed body CFD (ANSYS Fluent — supersonic)',
-          'TEKNOFEST critical design report + CFD analysis',
+          'Supersonic 3D wing and Ahmed body study in ANSYS Fluent',
+          'TEKNOFEST critical design report and CFD analysis',
         ],
       },
       {
         icon: 'Rocket',
         title: 'Propulsion Studies',
         items: [
-          'Turbojet & turbofan cycle calculations',
-          'Propulsive efficiency, thrust specific fuel consumption',
+          'Turbojet and turbofan cycle calculations',
+          'Propulsive efficiency and thrust specific fuel consumption',
         ],
       },
       {
         icon: 'Code2',
         title: 'Software Projects',
         items: [
-          'Campus Collab — student collaboration platform',
-          'Mindmap — psychology-based mobile app (in dev)',
+          'Campus Collab, a student collaboration platform',
+          'Mindmap, a psychology-based mobile app (in development)',
         ],
       },
     ],
@@ -67,9 +73,9 @@ export const about = {
 
   /* Küçük istatistik kutuları. Tamamen kaldırmak için: stats: [] */
   stats: [
-    { icon: 'Rocket', value: '3rd Year', label: 'B.Sc. Student' },
-    { icon: 'FlaskConical', value: '3+', label: 'CFD Projects' },
-    { icon: 'BookOpen', value: 'TEKNOFEST', label: 'Stage 1 Passed' },
+    { icon: 'Rocket', value: '3rd Year', label: 'B.Sc. Aerospace Eng.' },
+    { icon: 'Users', value: '10+', label: 'Team projects, 2 as lead' },
+    { icon: 'Trophy', value: 'TEKNOFEST', label: 'Stage 1 passed' },
     { icon: 'Globe', value: '4', label: 'Languages' },
   ],
 }

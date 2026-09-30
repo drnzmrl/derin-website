@@ -1,11 +1,16 @@
+import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import Section from '../components/layout/Section'
 import Icon from '../components/ui/Icon'
-import { AnimatedNumber, BorderTrail } from '../components/motion'
+import { AnimatedNumber, BorderTrail, Tilt } from '../components/motion'
+import MissionPatch from '../components/effects/MissionPatch'
 import { about } from '../data/about'
 import { site } from '../config/site.config'
 import { theme } from '../config/theme.config'
 import { dur } from '../config/applyTheme'
+
+/* Holografik kart sadece fotoğraf varsa yüklensin */
+const ProfileCard = lazy(() => import('../components/effects/ProfileCard'))
 
 const ease = theme.motion.ease
 
@@ -45,38 +50,34 @@ export default function About({ config }) {
         >
           <div className="relative">
             {/* Yumuşak şafak halesi */}
-            <div className="absolute -inset-3 rounded-[1.6rem] bg-gradient-to-br from-accent/20 via-transparent to-warm/20 blur-2xl" />
+            <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-accent/20 via-transparent to-warm/25 blur-3xl" />
 
-            <div className="relative w-72 h-80 md:w-80 md:h-96 rounded-card overflow-hidden panel">
-              {about.photo ? (
-                <img
-                  src={about.photo}
-                  alt={about.photoAlt}
-                  className="w-full h-full object-cover"
+            {about.photo ? (
+              <Suspense fallback={<div className="w-72 h-96" />}>
+                <ProfileCard
+                  className="relative w-72 md:w-80"
+                  avatarUrl={about.photo}
+                  name={site.fullName}
+                  title="Aerospace Engineering"
+                  handle="derinizmirli"
+                  status="METU NCC"
+                  contactText="Contact"
+                  miniAvatarUrl={null}
+                  onContactClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 />
-              ) : (
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-                  style={{
-                    background:
-                      'radial-gradient(ellipse at 50% 30%, rgb(var(--c-accent) / 0.12), transparent 65%)',
-                  }}
-                >
-                  <div className="w-24 h-24 rounded-full border border-accent/25 bg-accent/10 flex items-center justify-center">
-                    <span className="font-display text-3xl font-semibold text-accent">
-                      {site.initial}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted tracking-wide">
-                    src/data/about.js → photo
-                  </p>
-                </div>
-              )}
-            </div>
+              </Suspense>
+            ) : (
+              <Tilt max={8} scale={1.02} className="relative">
+                <MissionPatch
+                  name={site.fullName.toLocaleUpperCase('tr-TR')}
+                  className="w-72 h-72 md:w-80 md:h-80 drop-shadow-[0_30px_50px_rgba(0,0,0,0.45)]"
+                />
+              </Tilt>
+            )}
 
             {about.badge && (
               <motion.div
-                className="absolute -bottom-4 -right-4 panel px-4 py-2 rounded-soft"
+                className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 panel px-4 py-2 rounded-soft"
                 initial={{ opacity: 0, scale: 0.85 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -144,7 +145,7 @@ export default function About({ config }) {
                   viewport={{ once: true }}
                   transition={{ delay: dur(0.2 + i * 0.08), duration: dur(0.5), ease }}
                 >
-                  {/* Kenarda dolaşan ışık — sadece ilk kutuda, dikkat dağıtmasın */}
+                  {/* Kenarda dolaşan ışık, sadece ilk kutuda (dikkat dağıtmasın) */}
                   {i === 0 && <BorderTrail duration={7} />}
                   <div className="w-9 h-9 rounded-soft bg-accent/10 flex items-center justify-center flex-shrink-0">
                     <Icon name={stat.icon} size={16} className="text-accent" />

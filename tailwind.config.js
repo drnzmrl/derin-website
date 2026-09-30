@@ -21,6 +21,7 @@ export default {
       fontFamily: {
         sans: ['var(--font-body)'],
         display: ['var(--font-display)'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       borderRadius: {
         card: 'var(--radius)',

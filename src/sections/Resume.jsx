@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Section from '../components/layout/Section'
 import Icon from '../components/ui/Icon'
@@ -8,36 +9,29 @@ import { dur } from '../config/applyTheme'
 
 const ease = theme.motion.ease
 
-/** CV dosyası yokken gösterilen sayfa taslağı */
-function CVPlaceholder() {
+/** Telefonda (ya da PDF gömülemediğinde) gösterilen CV kapağı */
+function CVCover() {
+  const rows = [
+    ['Education', 'B.Sc. Aerospace Engineering, METU NCC, 2023 to now'],
+    ['Research', 'ANSYS Fluent: 3D wing & Ahmed body, NACA 0012 / 2415'],
+    ['Team', 'TEKNOFEST Fighter UAV, CFD and YOLO vision'],
+    ['Software', 'Quadra Rotate (Google Play), Campus Collab'],
+    ['Languages', 'Turkish, English C1, Spanish, German'],
+  ]
   return (
-    <div className="absolute inset-0 flex items-center justify-center p-8 md:p-12 select-none">
-      <div className="w-full space-y-5 opacity-45">
-        <div className="space-y-1.5">
-          <div className="h-4 rounded bg-text/15 w-1/3" />
-          <div className="h-2 rounded bg-text/10 w-1/2" />
-          <div className="h-2 rounded bg-text/10 w-2/5" />
-        </div>
-        <div className="h-px bg-text/15 w-full" />
-        {[1, 2, 3].map((s) => (
-          <div key={s} className="space-y-1.5">
-            <div className="h-2.5 rounded bg-warm/25 w-1/4" />
-            <div className="h-1.5 rounded bg-text/10 w-full" />
-            <div className="h-1.5 rounded bg-text/10 w-5/6" />
-            <div className="h-1.5 rounded bg-text/10 w-3/4" />
+    <div className="absolute inset-0 p-6 md:p-10 flex flex-col">
+      <p className="font-display text-2xl font-semibold text-text">{site.fullName}</p>
+      <p className="mt-1 font-mono text-[11px] text-muted">{site.email}</p>
+      <div className="my-5 h-px bg-text/10" />
+      <dl className="space-y-4">
+        {rows.map(([k, v]) => (
+          <div key={k}>
+            <dt className="eyebrow">{k}</dt>
+            <dd className="mt-1 text-sm text-text-dim leading-relaxed">{v}</dd>
           </div>
         ))}
-      </div>
-
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 px-6 text-center">
-          <Icon name="FileText" size={34} className="text-accent/50" />
-          <p className="text-xs text-muted">
-            CV dosyasını <span className="text-text-dim">public/cv/</span> içine koy,
-            yolunu <span className="text-text-dim">site.config.js → files.cv</span> içine yaz
-          </p>
-        </div>
-      </div>
+      </dl>
+      <p className="mt-auto pt-6 font-mono text-[10px] text-muted">Full CV: one page, PDF</p>
     </div>
   )
 }
@@ -45,6 +39,11 @@ function CVPlaceholder() {
 export default function Resume({ config }) {
   const cv = site.files.cv
   const fileName = cv ? cv.split('/').pop() : 'cv.pdf'
+  // Mobil tarayıcıların çoğu PDF'i sayfa içine gömmez
+  const [embed, setEmbed] = useState(false)
+  useEffect(() => {
+    setEmbed(!!cv && window.matchMedia('(min-width: 768px) and (pointer: fine)').matches)
+  }, [cv])
 
   return (
     <Section config={config} width="max-w-3xl" className="text-center">
@@ -66,19 +65,18 @@ export default function Resume({ config }) {
             <span className="text-xs text-muted ml-2">{fileName}</span>
           </div>
 
-          <div className="relative aspect-[1/1.3] md:aspect-[1/1.1] overflow-hidden">
-            {cv ? (
-              // Dosya tanımlıysa tarayıcının kendi PDF önizlemesi
+          <div className={`relative overflow-hidden ${embed ? 'aspect-[1/1.1]' : 'min-h-[420px]'}`}>
+            {embed ? (
               <object
                 data={`${cv}#toolbar=0&navpanes=0`}
                 type="application/pdf"
                 className="absolute inset-0 w-full h-full"
-                aria-label="CV önizleme"
+                aria-label="CV preview"
               >
-                <CVPlaceholder />
+                <CVCover />
               </object>
             ) : (
-              <CVPlaceholder />
+              <CVCover />
             )}
           </div>
         </div>

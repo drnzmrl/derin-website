@@ -163,9 +163,14 @@ export default function CursorCraft() {
     // Roket sıcak, jet soğuk iz bırakır
     const plume = kind === 'rocket' ? c.warm : c.accent
 
+    // Retina ekranlarda bulanık görünmesin: piksel yoğunluğuyla ölçekle
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      canvas.width = Math.round(window.innerWidth * dpr)
+      canvas.height = Math.round(window.innerHeight * dpr)
+      canvas.style.width = window.innerWidth + 'px'
+      canvas.style.height = window.innerHeight + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     resize()
 

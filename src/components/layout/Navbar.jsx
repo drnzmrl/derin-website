@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, QrCode } from 'lucide-react'
+import QrModal from '../ui/QrModal'
 import { site } from '../../config/site.config'
 import { navSections } from '../../config/sections.config'
 import { theme } from '../../config/theme.config'
@@ -10,6 +11,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('')
+  const [qr, setQr] = useState(false)
 
   // Menü bağlantıları sections.config.js'ten türetilir —
   // orada inNav: false yaparsan buradan da kaybolur.
@@ -66,12 +68,12 @@ export default function Navbar() {
             <span className="text-warm">.</span>
           </button>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-0.5">
             {links.map((link) => (
               <button
                 key={link.key}
                 onClick={() => go(link.key)}
-                className={`px-4 py-2 rounded-soft text-sm font-medium transition-all duration-300 ${
+                className={`px-3 py-2 rounded-soft text-sm font-medium transition-all duration-300 ${
                   active === link.key
                     ? 'text-text bg-text/10'
                     : 'text-text-dim hover:text-text hover:bg-text/5'
@@ -80,31 +82,55 @@ export default function Navbar() {
                 {link.navLabel || link.title || link.key}
               </button>
             ))}
+            {site.features.qr && (
+              <button
+                onClick={() => setQr(true)}
+                aria-label="Show QR code"
+                title="Show QR code"
+                className="ml-2 grid h-9 w-9 place-items-center rounded-soft text-text-dim hover:text-text hover:bg-text/5 transition-colors"
+              >
+                <QrCode size={17} />
+              </button>
+            )}
             {site.features.navbarCvButton && cv && (
               <a
                 href={cv}
                 download
-                className="ml-3 px-4 py-2 rounded-soft text-sm font-medium border border-warm/35 text-warm hover:bg-warm/10 transition-all duration-300"
+                className="ml-1 px-4 py-2 rounded-soft text-sm font-medium border border-warm/35 text-warm hover:bg-warm/10 transition-all duration-300"
               >
                 CV
               </a>
             )}
           </nav>
 
-          <button
-            className="md:hidden p-2 text-text-dim hover:text-text transition-colors"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="lg:hidden flex items-center gap-1">
+            {site.features.qr && (
+              <button
+                onClick={() => setQr(true)}
+                aria-label="Show QR code"
+                className="p-2 text-text-dim hover:text-text transition-colors"
+              >
+                <QrCode size={19} />
+              </button>
+            )}
+            <button
+              className="p-2 text-text-dim hover:text-text transition-colors"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Menu"
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </motion.header>
+
+      <QrModal open={qr} onClose={() => setQr(false)} />
 
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-30 bg-space/90 backdrop-blur-xl flex flex-col items-center justify-center gap-2 md:hidden"
+            className="fixed inset-0 z-30 bg-space/90 backdrop-blur-xl flex flex-col items-center justify-center gap-1 lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

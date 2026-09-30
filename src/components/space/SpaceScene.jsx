@@ -172,7 +172,18 @@ export default function SpaceScene() {
       camera.updateProjectionMatrix()
       readScroll()
     }
-    window.addEventListener('scroll', readScroll, { passive: true })
+    // "Hareketi azalt" açıkken sürekli döngü yok: sadece kaydırınca çiz
+    let stillRaf = null
+    const onScroll = () => {
+      readScroll()
+      if (still && running && !stillRaf) {
+        stillRaf = requestAnimationFrame(() => {
+          stillRaf = null
+          tick()
+        })
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize)
 
     let running = true
@@ -223,13 +234,14 @@ export default function SpaceScene() {
 
     function tick() {
       if (!running) return
-      raf = requestAnimationFrame(tick)
+      if (!still) raf = requestAnimationFrame(tick)
 
       const dt = Math.min(clock.getDelta(), 0.05)
-      const t = clock.elapsedTime
+      // Hareket azaltılmışsa zamana bağlı her şey (salınım, yörünge) sabit
+      const t = still ? 0 : clock.elapsedTime
       checkQuality(dt)
 
-      smoothP = lerp(smoothP, progress, Math.min(1, dt * 4))
+      smoothP = still ? progress : lerp(smoothP, progress, Math.min(1, dt * 4))
       const k = smoothP
       const op = cfg.opacity ?? 1
 
@@ -305,11 +317,20 @@ export default function SpaceScene() {
     }
     tick()
 
+    // Durağan modda, katalog ve dokular yüklenirken birkaç kez yeniden çiz
+    let stillTimer = null
+    if (still) {
+      stillTimer = setInterval(tick, 500)
+      setTimeout(() => clearInterval(stillTimer), 8000)
+    }
+
     return () => {
       disposed = true
       running = false
       if (raf) cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', readScroll)
+      if (stillRaf) cancelAnimationFrame(stillRaf)
+      if (stillTimer) clearInterval(stillTimer)
+      window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
       document.removeEventListener('visibilitychange', onVisibility)
 

@@ -27,7 +27,7 @@ export default function Footer() {
 
         <div className="text-center md:text-right">
           <p className="text-xs text-muted">
-            © {new Date().getFullYear()} {site.name} — {site.footer.note}
+            © {new Date().getFullYear()} {site.fullName || site.name} · {site.footer.note}
           </p>
           {site.footer.showCredit && (
             <p className="text-xs text-muted/70 mt-1">{site.footer.credit}</p>
@@ -62,6 +62,17 @@ export default function Footer() {
               Solar System Scope
             </a>{' '}
             (CC BY 4.0)
+          </p>
+          <p className="text-[11px] text-muted/60 mt-1">
+            CFD figures: my ANSYS Fluent runs · UAV photo:{' '}
+            <a
+              href="https://unsplash.com/photos/gE6YqIS5ii0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-text-dim underline underline-offset-2"
+            >
+              Unsplash
+            </a>
           </p>
         </div>
       </div>

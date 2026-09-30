@@ -293,6 +293,46 @@ Renk sınıfları: `text-accent`, `text-warm`, `bg-space`, `border-text/10`,
 
 ---
 
+## Yeni tasarımla gelenler
+
+### Fotoğraf
+`src/data/about.js` → `photo: '/images/derin.webp'` yazınca Hakkımda bölümündeki
+görev arması rozeti, imlece göre eğilen holografik profil kartına dönüşür.
+Arka planı temizlenmiş (PNG/WebP) dik bir portre en iyi sonucu verir.
+
+### Flow Lab
+Veriler `src/data/flowlab.js` içinde: Derin'in Fluent sonuçları (CL, CD) ve NASA
+deney verileri. Yeni bir koşu eklemek için ilgili profilin `runs` listesine
+`{ mach, regime, CL: [0°, 8°, 16°], CD: [...] }` satırı ekle.
+Animasyon `src/lib/panel.js` içindeki panel yöntemiyle hesaplanır; katsayılar
+oradan değil, veri dosyasından gelir.
+
+### Projeler
+`src/data/projects.js`. Her projenin `cover` alanı kapağı seçer:
+
+| kind | ne gösterir |
+|---|---|
+| `image` | düz görsel |
+| `cutout` | arka planı saydam 3B görsel, koyu zeminde süzülür |
+| `detection` | fotoğraf üstünde YOLO hedef kutusu |
+| `phones` | üç telefon ekranı yelpaze gibi açılır |
+| `blueprint` | teknik çizim (`src/components/effects/Blueprints.jsx`) |
+
+`gallery` listesi karta dokununca açılan galeridir. `featured: true` olan
+proje en üstte geniş kart olur. Görseller `public/images/work/` altında.
+
+### Kongre araçları
+- Menüdeki QR simgesi ve İletişim'deki QR: siteyi karşıdakinin telefonunda açtırır.
+  Adres otomatik olarak sitenin yayındaki alan adıdır.
+- **Save contact**: e-posta, LinkedIn ve site adresiyle vCard indirir (telefon yok).
+  İçeriği `src/lib/contact.js` içinde.
+- Kapatmak için `site.config.js` → `features.qr: false`.
+
+### Beyond the Lab
+`src/data/beyond.js`: mühendislik dışı deneyimler (gönüllülük, ödüller, müzik).
+
+---
+
 ## Çalıştırma
 
 ```bash

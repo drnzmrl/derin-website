@@ -39,6 +39,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
     /* Sayfanın tepesi şafak rengi — lastik bant kaydırmada bu görünür */
     background-color: rgb(var(--c-dawn));
   }
@@ -153,7 +154,7 @@
 
 @layer utilities {
   /* Başlıklarda gün doğumu geçişi: soğuk mavi → sıcak turuncu.
-     Gradyan ayrı bir değişkende: harf harf canlandırılan
+     Gradyan ayrı bir değişkende; harf harf canlandırılan
      başlıklarda TextEffect aynı gradyanı her harfe dilimleyerek
      uyguluyor (bkz. TextEffect.jsx). */
   .text-gradient {
@@ -183,3 +184,145 @@
     box-shadow: 0 18px 50px -24px rgb(var(--c-accent) / 0.45);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   Yeni tasarımın efektleri
+   ══════════════════════════════════════════════════════════════ */
+
+/* "Open to internships" noktası: radar gibi dışa doğru atan iki halka.
+   Barış Alkan'ın portfolyosundan. */
+@keyframes radar-ping {
+  0% { transform: scale(1); opacity: 0.75; }
+  100% { transform: scale(3.4); opacity: 0; }
+}
+.radar-dot {
+  position: relative;
+  display: inline-flex;
+  height: 0.5rem;
+  width: 0.5rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.9);
+}
+.radar-dot::before,
+.radar-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(52, 211, 153, 0.9);
+  animation: radar-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.radar-dot::after { animation-delay: 1.2s; }
+
+/* "Get it on Google Play": Google renklerinde dönen kenarlık */
+@property --play-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes play-spin { to { --play-angle: 360deg; } }
+.play-cta {
+  border-radius: 1rem;
+  padding: 2px;
+  background: conic-gradient(from var(--play-angle), #34a853, #fbbc04, #ea4335, #4285f4, #34a853);
+  animation: play-spin 3.2s linear infinite;
+}
+
+/* Flow Lab zemini: ince mühendislik ızgarası */
+.flow-grid {
+  background-color: #060a16;
+  background-image:
+    radial-gradient(ellipse 80% 70% at 40% 50%, rgb(var(--c-atmosphere) / 0.55), transparent 75%),
+    linear-gradient(rgb(var(--c-text) / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-text) / 0.045) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
+}
+
+/* Teknik çizim kağıdı */
+.blueprint-bg {
+  background-color: rgb(var(--c-space) / 0.75);
+  background-image:
+    radial-gradient(ellipse 90% 80% at 50% 110%, rgb(var(--c-warm) / 0.12), transparent 60%),
+    linear-gradient(rgb(var(--c-accent) / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-accent) / 0.07) 1px, transparent 1px),
+    linear-gradient(rgb(var(--c-accent) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-accent) / 0.035) 1px, transparent 1px);
+  background-size: auto, 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+}
+
+.cover-grid {
+  background-image:
+    linear-gradient(rgb(var(--c-text) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-text) / 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 75%);
+}
+
+.lightbox-stage {
+  background: radial-gradient(ellipse at 50% 60%, rgb(var(--c-atmosphere)), rgb(var(--c-space)) 80%);
+}
+
+/* Arka planı saydam 3B görsel hafifçe süzülür */
+@keyframes cutout-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+.cutout-float { animation: cutout-float 7s ease-in-out infinite; }
+
+/* Silindir arkasındaki girdaplar akışla birlikte kayar */
+@keyframes bp-drift {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(40px); opacity: 0.6; }
+}
+.bp-drift { animation: bp-drift 4s linear infinite alternate; }
+
+/* Görev arması: yazı halkası yavaşça döner, yıldızlar parlar */
+@keyframes patch-spin { to { transform: rotate(360deg); } }
+.patch-spin {
+  transform-box: view-box;
+  transform-origin: 160px 160px;
+  animation: patch-spin 60s linear infinite;
+}
+@keyframes patch-twinkle {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.25; }
+}
+.patch-twinkle { animation: patch-twinkle 3.2s ease-in-out infinite; }
+
+/* Araç şeridi: iki kopya yan yana, bir kopya boyu kayar */
+@keyframes tool-loop { to { transform: translateX(-50%); } }
+.tool-loop {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+.tool-loop-track {
+  display: flex;
+  width: max-content;
+  animation: tool-loop var(--loop-duration, 38s) linear infinite;
+}
+.tool-loop:hover .tool-loop-track { animation-play-state: paused; }
+.tool-loop-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-dot::before,
+  .radar-dot::after,
+  .play-cta,
+  .cutout-float,
+  .bp-drift,
+  .patch-spin,
+  .patch-twinkle {
+    animation: none !important;
+  }
+  .tool-loop-track { animation: none !important; flex-wrap: wrap; width: auto; justify-content: center; }
+  .tool-loop-row[aria-hidden] { display: none; }
+  .tool-loop { mask-image: none; }
+}
+[data-motion='off'] .tool-loop-track { animation: none !important; flex-wrap: wrap; width: auto; justify-content: center; }
+[data-motion='off'] .tool-loop-row[aria-hidden] { display: none; }
